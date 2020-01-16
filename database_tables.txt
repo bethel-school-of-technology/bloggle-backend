@@ -1,0 +1,43 @@
+CREATE TABLE Users(
+    ID INTEGER PRIMARY KEY AUTOINCREMENT,
+    userName VARCHAR(40) NOT NULL,
+    password VARCHAR(40) NOT NULL,
+    firstName VARCHAR(40) NOT NULL,
+    lastName VARCHAR(40) NOT NULL,
+    location VARCHAR(40) NOT NULL,
+    img CHAR(10000) DEFAULT NULL, //encoded using ascii characters
+	avgRating NUMERIC(1,4) DEFAULT NULL,
+	totalComments INTEGER DEFAULT NULL
+)
+
+CREATE TABLE Posts(
+    ID INTEGER PRIMARY KEY AUTOINCREMENT,
+    FOREIGN KEY(userID) REFERENCES Users(ID),
+    message VARCHAR(12500) NOT NULL,
+    tags VARCHAR(100),
+    dateCreated DATETIME DEFAULT(datetime('now')),
+    dateModified DATETIME DEFAULT NULL,
+	totalRating NUMERIC(1,4) DEFAULT NULL, //updated when a new rating is given
+    ratingNumber INTEGER DEFAULT NULL //updated when a new rating is given
+	isDraft INTEGER DEFAULT 0
+)
+
+CREATE TABLE Ratings(
+    ID INTEGER PRIMARY KEY AUTOINCREMENT
+    FOREIGN KEY(userID) REFERENCES Users(ID),
+    FOREIGN KEY(postID) REFERENCES Posts(ID),
+    rating NUMERIC(1,1)
+)
+
+CREATE TABLE Comments(
+    ID INTEGER PRIMARY KEY AUTOINCREMENT
+    message VARCHAR(1000) NOT NULL,
+    FOREIGN KEY(userID) REFERENCES Users(ID),
+    FOREIGN KEY(postID) REFERENCES Posts(ID)
+)
+
+CREATE TABLE Reports(
+    ID INTEGER PRIMARY KEY AUTOINCREMENT
+    FOREIGN KEY(userID) REFERENCES Users(ID),
+    FOREIGN KEY(postID) REFERENCES Posts(ID)
+)
