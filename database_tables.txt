@@ -2,42 +2,55 @@ CREATE TABLE Users(
     ID INTEGER PRIMARY KEY AUTOINCREMENT,
     userName VARCHAR(40) NOT NULL,
     password VARCHAR(40) NOT NULL,
+	email VARCHAR(40) NOT NULL,
     firstName VARCHAR(40) NOT NULL,
     lastName VARCHAR(40) NOT NULL,
     location VARCHAR(40) NOT NULL,
-    img CHAR(10000) DEFAULT NULL, //encoded using ascii characters
-	avgRating NUMERIC(1,4) DEFAULT NULL,
-	totalComments INTEGER DEFAULT NULL
+    img CHAR(10000) DEFAULT NULL, //encoded using ascii characters //profile image
+	//totalAvg NUMERIC(1,4) DEFAULT NULL, //possibly better to calculate that when user views their profile
+	totalPosts INTEGER DEFAULT NULL //update when 
 )
+totalAvg => grab all average ratings from posts made by the user (ratingValue/ratingCount) and divide that by the total amount of posts with ratings (not null)
 
 CREATE TABLE Posts(
     ID INTEGER PRIMARY KEY AUTOINCREMENT,
-    FOREIGN KEY(userID) REFERENCES Users(ID),
+	userID INTEGER NOT NULL,
     message VARCHAR(12500) NOT NULL,
-    tags VARCHAR(100),
     dateCreated DATETIME DEFAULT(datetime('now')),
     dateModified DATETIME DEFAULT NULL,
-	totalRating NUMERIC(1,4) DEFAULT NULL, //updated when a new rating is given
-    ratingNumber INTEGER DEFAULT NULL //updated when a new rating is given
-	isDraft INTEGER DEFAULT 0
+	ratingValue DOUBLE DEFAULT NULL, //updated when a new rating is given
+    ratingCount INTEGER DEFAULT NULL, //updated when a new rating is given
+	isDraft BOOLEAN DEFAULT 0,
+	totalComments INTEGER DEFAULT NULL,
+	FOREIGN KEY(userID) REFERENCES Users(ID)
 )
-
-CREATE TABLE Ratings(
-    ID INTEGER PRIMARY KEY AUTOINCREMENT
-    FOREIGN KEY(userID) REFERENCES Users(ID),
-    FOREIGN KEY(postID) REFERENCES Posts(ID),
-    rating NUMERIC(1,1)
-)
+ratingValue/ratingCount = average rating
 
 CREATE TABLE Comments(
-    ID INTEGER PRIMARY KEY AUTOINCREMENT
+    ID INTEGER PRIMARY KEY AUTOINCREMENT,
     message VARCHAR(1000) NOT NULL,
+	userID INTEGER NOT NULL,
+	postID INTEGER NOT NULL,
+	isDraft BOOLEAN DEFAULT 0,
+	reportCount INTEGER DEFAULT NULL,
     FOREIGN KEY(userID) REFERENCES Users(ID),
     FOREIGN KEY(postID) REFERENCES Posts(ID)
 )
 
+CREATE TABLE Ratings(
+    ID INTEGER PRIMARY KEY AUTOINCREMENT,
+	userID INTEGER NOT NULL,
+	postID INTEGER NOT NULL,
+    rating NUMERIC(1,1),
+	FOREIGN KEY(userID) REFERENCES Users(ID),
+    FOREIGN KEY(postID) REFERENCES Posts(ID)
+)
+
 CREATE TABLE Reports(
-    ID INTEGER PRIMARY KEY AUTOINCREMENT
+    ID INTEGER PRIMARY KEY AUTOINCREMENT,
+	userID INTEGER NOT NULL,
+	postID INTEGER NOT NULL,
+	message VARCHAR(12500) NOT NULL,
     FOREIGN KEY(userID) REFERENCES Users(ID),
     FOREIGN KEY(postID) REFERENCES Posts(ID)
 )
