@@ -1,0 +1,154 @@
+{
+    "tables": {
+        "users": {
+            "tableName": "users",
+            "schema": {
+                "serId": {
+                    "allowNull": false,
+                    "autoIncrement": true,
+                    "primaryKey": true,
+                    "field": "UserId",
+                    "seqType": "Sequelize.INTEGER"
+                },
+                "username": {
+                    "unique": true,
+                    "field": "Username",
+                    "seqType": "Sequelize.STRING"
+                },
+                "password": {
+                    "field": "Password",
+                    "seqType": "Sequelize.STRING"
+                },
+                "email": {
+                    "unique": true,
+                    "field": "Email",
+                    "seqType": "Sequelize.STRING"
+                },
+                "firstName": {
+                    "field": "FirstName",
+                    "seqType": "Sequelize.STRING"
+                },
+                "lastName": {
+                    "field": "LastName",
+                    "seqType": "Sequelize.STRING"
+                },
+                "location": {
+                    "field": "Location",
+                    "seqType": "Sequelize.STRING"
+                },
+                "admin": {
+                    "defaultValue": {
+                        "value": false
+                    },
+                    "allowNull": false,
+                    "field": "Admin",
+                    "seqType": "Sequelize.BOOLEAN"
+                },
+                "deleted": {
+                    "defaultValue": {
+                        "value": false
+                    },
+                    "field": "Deleted",
+                    "seqType": "Sequelize.BOOLEAN"
+                },
+                "createdAt": {
+                    "allowNull": false,
+                    "field": "createdAt",
+                    "seqType": "Sequelize.DATE"
+                },
+                "updatedAt": {
+                    "allowNull": false,
+                    "field": "updatedAt",
+                    "seqType": "Sequelize.DATE"
+                }
+            }
+        },
+        "post": {
+            "tableName": "post",
+            "schema": {
+                "postId": {
+                    "allowNull": false,
+                    "autoIncrement": true,
+                    "primaryKey": true,
+                    "field": "PostId",
+                    "seqType": "Sequelize.INTEGER"
+                },
+                "userId": {
+                    "allowNull": false,
+                    "primaryKey": true,
+                    "field": "UserId",
+                    "seqType": "Sequelize.INTEGER"
+                },
+                "message": {
+                    "allowNull": false,
+                    "seqType": "Sequelize.STRING",
+                    "autoIncrement": true,
+                    "primaryKey": true,
+                    "field": "Message"
+                },
+                "isDraft": {
+                    "defaultValue": {
+                    "value": true
+                    },
+                    "field": "isDraft",
+                    "seqType": "Sequelize.BOOLEAN"
+                },
+                "createdAt": {
+                    "allowNull": false,
+                    "field": "createdAt",
+                    "seqType": "Sequelize.DATE"
+                },
+                "updatedAt": {
+                    "allowNull": false,
+                    "field": "updatedAt",
+                    "seqType": "Sequelize.DATE"
+                }
+            }
+        },
+       "comment": {
+                    "tableName": "comment",
+                    "schema": {
+                        "commentId": {
+                            "allowNull": false,
+                            "autoIncrement": true,
+                            "primaryKey": true,
+                            "field": "CommentId",
+                            "seqType": "Sequelize.INTEGER"
+                        },
+                        "comment": {
+                            "allowNull": false,
+                            "seqType": "Sequelize.STRING",
+                            "autoIncrement": true,
+                            "primaryKey": true,
+                            "field": "Comment",
+                            "isDraft": "Sequelize.BOOLEAN"
+                        },
+                        "userId": {
+                            "allowNull": false,
+                            "primaryKey": true,
+                            "field": "UserId",
+                            "seqType": "Sequelize.INTEGER"
+                        },
+                        "isDraft": {
+                            "defaultValue": {
+                                "value": true,
+                                "field": "isDraft",
+                                "seqType": "Sequelize.BOOLEAN"
+                        },
+                            "createdAt": {
+                                "allowNull": false,
+                                "field": "createdAt",
+                                "seqType": "Sequelize.DATE"
+                        },
+                            "updatedAt": {
+                                "allowNull": false,
+                                "field": "updatedAt",
+                                "seqType": "Sequelize.DATE"
+                        }
+                    }
+                },
+                "reporting": []
+                        }
+                    },
+                    "revision": 1
+                }
