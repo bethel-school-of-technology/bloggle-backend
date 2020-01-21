@@ -6,11 +6,15 @@ CREATE TABLE Users(
     firstName VARCHAR(40) NOT NULL,
     lastName VARCHAR(40) NOT NULL,
     location VARCHAR(40) NOT NULL,
+	isAdmin BOOLEAN DEFAULT 0,
+	isDeleted BOOLEAN DEFAULT 0,
     img CHAR(10000) DEFAULT NULL, //encoded using ascii characters //profile image
 	//totalAvg NUMERIC(1,4) DEFAULT NULL, //possibly better to calculate that when user views their profile
-	totalPosts INTEGER DEFAULT NULL //update when 
+	totalPosts INTEGER DEFAULT NULL //increase by 1 when a new post has been created
 )
 totalAvg => grab all average ratings from posts made by the user (ratingValue/ratingCount) and divide that by the total amount of posts with ratings (not null)
+
+considering creating a table or index for emails and usernames
 
 CREATE TABLE Posts(
     ID INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -25,6 +29,7 @@ CREATE TABLE Posts(
 	FOREIGN KEY(userID) REFERENCES Users(ID)
 )
 ratingValue/ratingCount = average rating
+if isDraft changes from 1 to 0, dateCreated is re-updated
 
 CREATE TABLE Comments(
     ID INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -50,6 +55,7 @@ CREATE TABLE Reports(
     ID INTEGER PRIMARY KEY AUTOINCREMENT,
 	userID INTEGER NOT NULL,
 	postID INTEGER NOT NULL,
+	dateCreated DATETIME DEFAULT(datetime('now')),
 	message VARCHAR(12500) NOT NULL,
     FOREIGN KEY(userID) REFERENCES Users(ID),
     FOREIGN KEY(postID) REFERENCES Posts(ID)
