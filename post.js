@@ -2,12 +2,8 @@
 
 var Sequelize = require('sequelize');
 
-/**
- * Actions summary:
- *
- * createTable "post", deps: []
- *
- **/
+// Actions summary:
+// createTable "post", deps: []
 
 var info = {
     "revision": 1,
