@@ -20,10 +20,24 @@ namespace collaby_backend.Controllers
         }
 
         // GET api/reports
+
         [HttpGet]
-        public ActionResult<IEnumerable<Report>> Get()
+        public ActionResult<Report> Get(long reportId)
         {
-            List<Report> ReportList = _context.Reports.ToList();
+            Report report = _context.Reports.First(o=>o.Id == reportId);
+            return report;
+        }
+        [HttpGet]
+        public ActionResult<IEnumerable<Report>> GetPostReports(long postId)
+        {
+            List<Report> ReportList = _context.Reports.Where(o=>o.PostId == postId).OrderByDescending(o=>o.DateCreated).ToList();
+            return ReportList;
+        }
+
+        [HttpGet]
+        public ActionResult<IEnumerable<Report>> GetAll()
+        {
+            List<Report> ReportList = _context.Reports.OrderByDescending(o=>o.DateCreated).ToList();
             return ReportList;
         }
 
@@ -34,10 +48,10 @@ namespace collaby_backend.Controllers
             await _context.SaveChangesAsync();
             return "Report has been successfully added";
         }
+
         [HttpPut]
         public async Task<string> Edit(Report report){
 
-            List<Report> ReportList = _context.Reports.ToList();
             _context.Entry(report).State = EntityState.Modified;
             await _context.SaveChangesAsync();
 
@@ -46,7 +60,6 @@ namespace collaby_backend.Controllers
         [HttpDelete]
         public async Task<string> Delete(Report report){
 
-            List<Report> PostList = _context.Reports.ToList();
             _context.Entry(report).State = EntityState.Deleted;
             await _context.SaveChangesAsync();
 

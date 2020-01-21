@@ -21,23 +21,26 @@ namespace collaby_backend.Controllers
 
         // GET api/comments
         [HttpGet]
-        public ActionResult<IEnumerable<Comment>> Get()
+        public ActionResult<IEnumerable<Comment>> GetAll(long postId)
         {
-            List<Comment> CommentList = _context.Comments.ToList();
+            List<Comment> CommentList = _context.Comments.Where(o=>o.PostId == postId).ToList();
             return CommentList;
+        }
+        public ActionResult<Comment> GetSingle(long commentId){
+            Comment comment = _context.Comments.First(o=>o.Id == commentId);
+            return comment;
         }
 
         [HttpPost]
-        public async Task<string> POST(Comment report){
+        public async Task<string> POST(Comment comment){
 
-            _context.Comments.Add(report);
+            _context.Comments.Add(comment);
             await _context.SaveChangesAsync();
             return "Comment has been successfully added";
         }
         [HttpPut]
         public async Task<string> Edit(Comment comment){
 
-            List<Comment> CommentList = _context.Comments.ToList();
             _context.Entry(comment).State = EntityState.Modified;
             await _context.SaveChangesAsync();
 
@@ -46,7 +49,6 @@ namespace collaby_backend.Controllers
         [HttpDelete]
         public async Task<string> Delete(Comment comment){
 
-            List<Comment> PostList = _context.Comments.ToList();
             _context.Entry(comment).State = EntityState.Deleted;
             await _context.SaveChangesAsync();
 

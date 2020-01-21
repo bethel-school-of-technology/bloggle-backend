@@ -21,10 +21,10 @@ namespace collaby_backend.Controllers
 
         // GET api/posts
         [HttpGet]
-        public ActionResult<IEnumerable<Rating>> Get()
+        public ActionResult<Rating> Get(long postId, long userId)
         {
-            List<Rating> RatingList = _context.Ratings.ToList();
-            return RatingList;
+            Rating rating = _context.Ratings.First(o=>o.PostId == postId && o.UserId == userId);
+            return rating;
         }
 
         [HttpPost]
@@ -37,20 +37,10 @@ namespace collaby_backend.Controllers
         [HttpPut]
         public async Task<string> Edit(Rating rating){
 
-            List<Rating> RatingList = _context.Ratings.ToList();
             _context.Entry(rating).State = EntityState.Modified;
             await _context.SaveChangesAsync();
 
             return "Rating has been successfully updated";
-        }
-        [HttpDelete]
-        public async Task<string> Delete(Rating rating){
-
-            List<Rating> PostList = _context.Ratings.ToList();
-            _context.Entry(rating).State = EntityState.Deleted;
-            await _context.SaveChangesAsync();
-
-            return "Your rating has been deleted";
         }
 
     }

@@ -10,7 +10,8 @@ CREATE TABLE Users(
 	isDeleted BOOLEAN DEFAULT 0,
     img CHAR(10000) DEFAULT NULL, //encoded using ascii characters //profile image
 	//totalAvg NUMERIC(1,4) DEFAULT NULL, //possibly better to calculate that when user views their profile
-	totalPosts INTEGER DEFAULT NULL //increase by 1 when a new post has been created
+	//totalRating DOUBLE DEFAULT NULL, //calculated by adding together all average values on each post, even the ones will NULL ratings
+	totalPosts INTEGER DEFAULT 0 //increase by 1 when a new post has been created (non-draft)
 )
 totalAvg => grab all average ratings from posts made by the user (ratingValue/ratingCount) and divide that by the total amount of posts with ratings (not null)
 
@@ -18,14 +19,14 @@ considering creating a table or index for emails and usernames
 
 CREATE TABLE Posts(
     ID INTEGER PRIMARY KEY AUTOINCREMENT,
-	userID INTEGER NOT NULL,
-    message VARCHAR(12500) NOT NULL,
-    dateCreated DATETIME DEFAULT(datetime('now')),
-    dateModified DATETIME DEFAULT NULL,
-	ratingValue DOUBLE DEFAULT NULL, //updated when a new rating is given
-    ratingCount INTEGER DEFAULT NULL, //updated when a new rating is given
-	isDraft BOOLEAN DEFAULT 0,
-	totalComments INTEGER DEFAULT NULL,
+	UserID INTEGER NOT NULL,
+    Message VARCHAR(12500) NOT NULL,
+    DateCreated DATETIME DEFAULT(datetime('now')),
+    DateModified DATETIME DEFAULT NULL,
+	RatingValue DOUBLE DEFAULT NULL, //updated when a new rating is given
+    RatingCount INTEGER DEFAULT NULL, //updated when a new rating is given
+	IsDraft BOOLEAN DEFAULT 0,
+	TotalComments INTEGER DEFAULT NULL,
 	FOREIGN KEY(userID) REFERENCES Users(ID)
 )
 ratingValue/ratingCount = average rating
@@ -33,30 +34,30 @@ if isDraft changes from 1 to 0, dateCreated is re-updated
 
 CREATE TABLE Comments(
     ID INTEGER PRIMARY KEY AUTOINCREMENT,
-    message VARCHAR(1000) NOT NULL,
-	userID INTEGER NOT NULL,
-	postID INTEGER NOT NULL,
-	isDraft BOOLEAN DEFAULT 0,
-	reportCount INTEGER DEFAULT NULL,
+    Message VARCHAR(1000) NOT NULL,
+	UserID INTEGER NOT NULL,
+	PostID INTEGER NOT NULL,
+	IsDraft BOOLEAN DEFAULT 0,
+	ReportCount INTEGER DEFAULT NULL,
     FOREIGN KEY(userID) REFERENCES Users(ID),
     FOREIGN KEY(postID) REFERENCES Posts(ID)
 )
 
 CREATE TABLE Ratings(
     ID INTEGER PRIMARY KEY AUTOINCREMENT,
-	userID INTEGER NOT NULL,
-	postID INTEGER NOT NULL,
-    rating NUMERIC(1,1),
+	UserID INTEGER NOT NULL,
+	PostID INTEGER NOT NULL,
+    Rating NUMERIC(1,1),
 	FOREIGN KEY(userID) REFERENCES Users(ID),
     FOREIGN KEY(postID) REFERENCES Posts(ID)
 )
 
 CREATE TABLE Reports(
     ID INTEGER PRIMARY KEY AUTOINCREMENT,
-	userID INTEGER NOT NULL,
-	postID INTEGER NOT NULL,
-	dateCreated DATETIME DEFAULT(datetime('now')),
-	message VARCHAR(12500) NOT NULL,
+	UserID INTEGER NOT NULL,
+	PostID INTEGER NOT NULL,
+	DateCreated DATETIME DEFAULT(datetime('now')),
+	Message VARCHAR(12500) NOT NULL,
     FOREIGN KEY(userID) REFERENCES Users(ID),
     FOREIGN KEY(postID) REFERENCES Posts(ID)
 )
