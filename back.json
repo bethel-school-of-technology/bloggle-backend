@@ -86,7 +86,7 @@
                     "field": "Message"
                 },
                 "isDraft": {
-                    "defaultValue":
+                    "defaultValue": true,
                     "value": true,
                     "field": "isDraft",
                     "seqType": "Sequelize.BOOLEAN"
