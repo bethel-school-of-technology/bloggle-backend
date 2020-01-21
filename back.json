@@ -46,7 +46,7 @@
                 },
                 "deleted": {
                     "defaultValue": {
-                    "value": false
+                    "value": false,
                     "field": "Deleted",
                     "seqType": "Sequelize.BOOLEAN"
                 },
@@ -87,7 +87,7 @@
                 },
                 "isDraft": {
                     "defaultValue":
-                    "value": true
+                    "value": true,
                     "field": "isDraft",
                     "seqType": "Sequelize.BOOLEAN"
                 },
