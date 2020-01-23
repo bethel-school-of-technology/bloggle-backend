@@ -19,13 +19,18 @@ namespace collaby_backend.Controllers
             _context = context;
         }
 
-        // GET api/comments
-        [HttpGet]
+        // GET api/comments/{id}
+        [HttpGet("{postId}")]
         public ActionResult<IEnumerable<Comment>> GetAll(long postId)
         {
-            List<Comment> CommentList = _context.Comments.Where(o=>o.PostId == postId).ToList();
+            List<Comment> CommentList = _context.Comments.Where(o=>o.PostId == postId).OrderByDescending(o=>o.Id).ToList();
+            if(CommentList == null){
+                return NotFound();
+            }
             return CommentList;
         }
+        // GET api/comments/single/{id}
+        [HttpGet("single/{commentId}")]
         public ActionResult<Comment> GetSingle(long commentId){
             Comment comment = _context.Comments.First(o=>o.Id == commentId);
             return comment;

@@ -8,7 +8,7 @@ dotnet tool install --global dotnet-aspnet-codegenerator
 
 generate models:
 
-dotnet ef dbcontext scaffold "Data Source=C:/repos/source/collaby-backend/collabyDB.db" Microsoft.EntityFrameworkCore.Sqlite -c ApplicationDbContext -f -o Models -t Users -t Posts -t Comments -t Ratings -t Reports --use-database-names
+dotnet ef dbcontext scaffold "Data Source=C:/repos/collaby-backend/source/collabyDB.db" Microsoft.EntityFrameworkCore.Sqlite -c ApplicationDbContext -f -o Models
 
 generate controllers from models:
 

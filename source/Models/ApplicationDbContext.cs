@@ -25,7 +25,7 @@ namespace collaby_backend.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlite("Data Source=collabyDB.db");
+                optionsBuilder.UseSqlite("Data Source=C:/repos/collaby-backend/source/collabyDB.db");
             }
         }
 
@@ -33,25 +33,13 @@ namespace collaby_backend.Models
         {
             modelBuilder.Entity<Comment>(entity =>
             {
-                entity.Property(e => e.Id)
-                    .HasColumnName("ID")
-                    .ValueGeneratedNever();
+                entity.Property(e => e.Id).ValueGeneratedNever();
 
-                entity.Property(e => e.IsDraft)
-                    .HasColumnName("isDraft")
-                    .HasColumnType("BOOLEAN")
-                    .HasDefaultValueSql("0");
+                entity.Property(e => e.IsDraft).HasDefaultValueSql("0");
 
                 entity.Property(e => e.Message)
                     .IsRequired()
-                    .HasColumnName("message")
                     .HasColumnType("VARCHAR(1000)");
-
-                entity.Property(e => e.PostId).HasColumnName("postID");
-
-                entity.Property(e => e.ReportCount).HasColumnName("reportCount");
-
-                entity.Property(e => e.UserId).HasColumnName("userID");
 
                 entity.HasOne(d => d.Post)
                     .WithMany(p => p.Comments)
@@ -66,38 +54,19 @@ namespace collaby_backend.Models
 
             modelBuilder.Entity<Post>(entity =>
             {
-                entity.Property(e => e.Id)
-                    .HasColumnName("ID")
-                    .ValueGeneratedNever();
+                entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.DateCreated)
-                    .HasColumnName("dateCreated")
                     .HasColumnType("DATETIME")
                     .HasDefaultValueSql("datetime('now')");
 
-                entity.Property(e => e.DateModified)
-                    .HasColumnName("dateModified")
-                    .HasColumnType("DATETIME");
-
-                entity.Property(e => e.IsDraft)
-                    .HasColumnName("isDraft")
-                    .HasColumnType("BOOLEAN")
-                    .HasDefaultValueSql("0");
+                entity.Property(e => e.DateModified).HasColumnType("DATETIME");
 
                 entity.Property(e => e.Message)
                     .IsRequired()
-                    .HasColumnName("message")
                     .HasColumnType("VARCHAR(12500)");
 
-                entity.Property(e => e.RatingCount).HasColumnName("ratingCount");
-
-                entity.Property(e => e.RatingValue)
-                    .HasColumnName("ratingValue")
-                    .HasColumnType("DOUBLE");
-
-                entity.Property(e => e.TotalComments).HasColumnName("totalComments");
-
-                entity.Property(e => e.UserId).HasColumnName("userID");
+                entity.Property(e => e.RatingValue).HasColumnType("DOUBLE");
 
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.Posts)
@@ -111,13 +80,7 @@ namespace collaby_backend.Models
                     .HasColumnName("ID")
                     .ValueGeneratedNever();
 
-                entity.Property(e => e.PostId).HasColumnName("postID");
-
-                entity.Property(e => e.Ratings)
-                    .HasColumnName("rating")
-                    .HasColumnType("NUMERIC(1,1)");
-
-                entity.Property(e => e.UserId).HasColumnName("userID");
+                entity.Property(e => e.Ratings).HasColumnType("NUMERIC(1,1)");
 
                 entity.HasOne(d => d.Post)
                     .WithMany(p => p.Ratings)
@@ -137,18 +100,12 @@ namespace collaby_backend.Models
                     .ValueGeneratedNever();
 
                 entity.Property(e => e.DateCreated)
-                    .HasColumnName("dateCreated")
                     .HasColumnType("DATETIME")
                     .HasDefaultValueSql("datetime('now')");
 
                 entity.Property(e => e.Message)
                     .IsRequired()
-                    .HasColumnName("message")
                     .HasColumnType("VARCHAR(12500)");
-
-                entity.Property(e => e.PostId).HasColumnName("postID");
-
-                entity.Property(e => e.UserId).HasColumnName("userID");
 
                 entity.HasOne(d => d.Post)
                     .WithMany(p => p.Reports)
@@ -163,54 +120,40 @@ namespace collaby_backend.Models
 
             modelBuilder.Entity<User>(entity =>
             {
-                entity.Property(e => e.Id)
-                    .HasColumnName("ID")
-                    .ValueGeneratedNever();
+                entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.Email)
                     .IsRequired()
-                    .HasColumnName("email")
                     .HasColumnType("VARCHAR(40)");
 
                 entity.Property(e => e.FirstName)
                     .IsRequired()
-                    .HasColumnName("firstName")
                     .HasColumnType("VARCHAR(40)");
 
-                entity.Property(e => e.Img)
-                    .HasColumnName("img")
-                    .HasColumnType("CHAR(10000)");
+                entity.Property(e => e.Followings).HasColumnType("VARCHAR(1400)");
 
-                entity.Property(e => e.IsAdmin)
-                    .HasColumnName("isAdmin")
-                    .HasColumnType("BOOLEAN")
-                    .HasDefaultValueSql("0");
-
-                entity.Property(e => e.IsDeleted)
-                    .HasColumnName("isDeleted")
-                    .HasColumnType("BOOLEAN")
-                    .HasDefaultValueSql("0");
+                entity.Property(e => e.Img).HasColumnType("CHAR(10000)");
 
                 entity.Property(e => e.LastName)
                     .IsRequired()
-                    .HasColumnName("lastName")
                     .HasColumnType("VARCHAR(40)");
 
                 entity.Property(e => e.Location)
                     .IsRequired()
-                    .HasColumnName("location")
                     .HasColumnType("VARCHAR(40)");
 
                 entity.Property(e => e.Password)
                     .IsRequired()
-                    .HasColumnName("password")
-                    .HasColumnType("VARCHAR(40)");
+                    .HasColumnType("VARCHAR(80)");
 
-                entity.Property(e => e.TotalPosts).HasColumnName("totalPosts");
+                entity.Property(e => e.RatedPosts).HasDefaultValueSql("0");
+
+                entity.Property(e => e.TotalPosts).HasDefaultValueSql("0");
+
+                entity.Property(e => e.TotalRating).HasColumnType("DOUBLE");
 
                 entity.Property(e => e.UserName)
                     .IsRequired()
-                    .HasColumnName("userName")
                     .HasColumnType("VARCHAR(40)");
             });
 

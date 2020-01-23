@@ -22,22 +22,22 @@ namespace collaby_backend.Controllers
         // GET api/reports
 
         [HttpGet]
+        public ActionResult<IEnumerable<Report>> GetAll()
+        {
+            List<Report> ReportList = _context.Reports.OrderByDescending(o=>o.DateCreated).ToList();
+            return ReportList;
+        }
+        [HttpGet("{reportId}")]
         public ActionResult<Report> Get(long reportId)
         {
             Report report = _context.Reports.First(o=>o.Id == reportId);
             return report;
         }
-        [HttpGet]
+
+        [HttpGet("post/{postId}")]
         public ActionResult<IEnumerable<Report>> GetPostReports(long postId)
         {
             List<Report> ReportList = _context.Reports.Where(o=>o.PostId == postId).OrderByDescending(o=>o.DateCreated).ToList();
-            return ReportList;
-        }
-
-        [HttpGet]
-        public ActionResult<IEnumerable<Report>> GetAll()
-        {
-            List<Report> ReportList = _context.Reports.OrderByDescending(o=>o.DateCreated).ToList();
             return ReportList;
         }
 

@@ -19,22 +19,27 @@ namespace collaby_backend.Controllers
             _context = context;
         }
 
-        // GET api/posts
-        [HttpGet]
-        public ActionResult<Post> Get(long postId)
-        {
-            Post post = _context.Posts.First(o=>o.Id == postId);
-            return post;
-        }
-        [HttpGet]
+        [HttpGet("{userId}")]
         public ActionResult<IEnumerable<Post>> GetUserPosts(long userId)
         {
             List<Post> PostList = _context.Posts.Where(o=>o.UserId == userId).OrderByDescending(o=>o.DateCreated).ToList();
             return PostList;
         }
 
+        // GET api/posts
+        [HttpGet("single/{userId}")]
+        public ActionResult<Post> Get(long postId)
+        {
+            Post post = _context.Posts.First(o=>o.Id == postId);
+            return post;
+        }
+
         [HttpPost]
         public async Task<string> POST(Post post){
+
+            if(post.IsDraft == 1){
+                post.DateCreated = null;
+            }
 
             _context.Posts.Add(post);
             await _context.SaveChangesAsync();
@@ -43,7 +48,14 @@ namespace collaby_backend.Controllers
 
         [HttpPut]
         public async Task<string> Edit(Post post){
+            
+            if(post.IsDraft == 0){
+                if(post.DateCreated == null){
 
+                }else{
+                    post.DateModified = DateTime.Now;
+                }
+            }
             _context.Entry(post).State = EntityState.Modified;
             await _context.SaveChangesAsync();
 

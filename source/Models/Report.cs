@@ -8,7 +8,7 @@ namespace collaby_backend.Models
         public long Id { get; set; }
         public long UserId { get; set; }
         public long PostId { get; set; }
-        public byte[] DateCreated { get; set; }
+        public DateTime DateCreated { get; set; }
         public string Message { get; set; }
 
         public virtual Post Post { get; set; }

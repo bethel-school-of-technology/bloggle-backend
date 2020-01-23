@@ -11,7 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using collaby_backend.Models;
-using Microsoft.EntityFrameworkCore.Sqlite;
+using Microsoft.EntityFrameworkCore;
 
 namespace collaby_backend
 {
@@ -29,12 +29,13 @@ namespace collaby_backend
         {
             services.AddControllers();
 
-            //services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
 
-            //var connectionString = "Data Source=collabyDB.db";
+            var connectionString = "Data Source=collabyDB.db";
 
-            //services.AddDbContext<ApplicationDbContext>(options =>
-                //options.UseSqlite(connectionString));
+            services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseSqlite(connectionString));
+                //options.UseSqlite(Configuration.GetConnectionString(connectionString)));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -46,11 +47,8 @@ namespace collaby_backend
             }
 
             app.UseHttpsRedirection();
-
             app.UseRouting();
-
             app.UseAuthorization();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
