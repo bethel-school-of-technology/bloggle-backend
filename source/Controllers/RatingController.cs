@@ -31,12 +31,20 @@ namespace collaby_backend.Controllers
         public async Task<string> POST(Rating rating){
 
             _context.Ratings.Add(rating);
+            Post post =_context.Posts.First(o=>o.Id == rating.PostId);
+            post.RatingCount += 1;
+            post.RatingValue += rating.Ratings;
+            _context.Entry(post).State = EntityState.Modified;
             await _context.SaveChangesAsync();
             return "Rating has been successfully added";
         }
         [HttpPut]
         public async Task<string> Edit(Rating rating){
 
+            Post post =_context.Posts.First(o=>o.Id == rating.PostId);
+            post.RatingValue += rating.Ratings - _context.Ratings.First(o=>o.Id == rating.Id).Ratings;
+
+            _context.Entry(post).State = EntityState.Modified;
             _context.Entry(rating).State = EntityState.Modified;
             await _context.SaveChangesAsync();
 

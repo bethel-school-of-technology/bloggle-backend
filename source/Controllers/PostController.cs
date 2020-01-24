@@ -19,6 +19,13 @@ namespace collaby_backend.Controllers
             _context = context;
         }
 
+        [HttpGet]
+        public ActionResult<IEnumerable<Post>> Get()
+        {
+            List<Post> PostList = _context.Posts.ToList();
+            return PostList;
+        }
+
         [HttpGet("{userId}")]
         public ActionResult<IEnumerable<Post>> GetUserPosts(long userId)
         {
@@ -27,11 +34,37 @@ namespace collaby_backend.Controllers
         }
 
         // GET api/posts
-        [HttpGet("single/{userId}")]
-        public ActionResult<Post> Get(long postId)
+        [HttpGet("single/{postId}")]
+        public ActionResult<Post> GetPost(long postId)
         {
             Post post = _context.Posts.First(o=>o.Id == postId);
             return post;
+        }
+
+        [HttpGet("feed/{followingString}")]
+        public ActionResult<IEnumerable<Post>> Get(String followingString)
+        {
+            //10,000 ticks per milisecond
+            //long month = 25920000000000; //ticks in a month
+            long week = 6048000000000; //ticks in a week
+            //may not need to convert to universal time
+            DateTime pastTime =  new DateTime(DateTime.Now.ToUniversalTime().Ticks - week*2);
+            List<Post> PostList = _context.Posts.Where(o=>o.DateCreated > pastTime).OrderByDescending(o=>o.DateCreated).ToList();
+            List<Post> Feed = new List<Post>();
+            
+            long[] userIds = Array.ConvertAll(followingString.Split(";"), long.Parse);
+            foreach(Post post in PostList){
+                foreach(long id in userIds){
+                    if(post.UserId == id){
+                        Feed.Add(post);
+                        break;
+                    }
+                }
+                if(Feed.Count<=20){
+                    break;
+                }
+            }
+            return Feed;
         }
 
         [HttpPost]
@@ -39,6 +72,10 @@ namespace collaby_backend.Controllers
 
             if(post.IsDraft == 1){
                 post.DateCreated = null;
+            }else{
+                User user = _context.Users.First(o=>o.Id == post.UserId);
+                user.TotalPosts += 1;
+                _context.Entry(user).State = EntityState.Modified;
             }
 
             _context.Posts.Add(post);
@@ -48,11 +85,17 @@ namespace collaby_backend.Controllers
 
         [HttpPut]
         public async Task<string> Edit(Post post){
-            
-            if(post.IsDraft == 0){
-                if(post.DateCreated == null){
 
-                }else{
+            if(post.IsDraft == 0){
+
+                Post currentPost = _context.Posts.First(o=>o.Id == post.Id);
+                //if the draft state changes add 1 to total posts for the user that posted it
+                if (currentPost.IsDraft == 1){
+                    User user = _context.Users.First(o=>o.Id == post.UserId);
+                    user.TotalPosts += 1;
+                    _context.Entry(user).State = EntityState.Modified;
+                }
+                if(post.DateCreated != null){
                     post.DateModified = DateTime.Now;
                 }
             }
@@ -64,6 +107,12 @@ namespace collaby_backend.Controllers
 
         [HttpDelete]
         public async Task<string> Delete(Post post){
+
+            if(post.IsDraft == 0){
+                User user = _context.Users.First(o=>o.Id == post.UserId);
+                user.TotalPosts -= 1;
+                _context.Entry(user).State = EntityState.Modified;
+            }
 
             _context.Entry(post).State = EntityState.Deleted;
             await _context.SaveChangesAsync();

@@ -1,17 +1,19 @@
 CREATE TABLE Users(
     Id INTEGER PRIMARY KEY AUTOINCREMENT,
-    UserName VARCHAR(40) NOT NULL,
+    UserName VARCHAR(40) NOT NULL UNIQUE,
     Password VARCHAR(80) NOT NULL,
-	Email VARCHAR(40) NOT NULL,
+	Email VARCHAR(40) NOT NULL UNIQUE,
     FirstName VARCHAR(40) NOT NULL,
     LastName VARCHAR(40) NOT NULL,
     Location VARCHAR(40) NOT NULL,
+	DateCreated DATETIME DEFAULT(datetime('now')),
 	IsAdmin INTEGER DEFAULT 0 NOT NULL,
 	IsBand INTEGER DEFAULT 0 NOT NULL,
     Img CHAR(10000) DEFAULT NULL, //base64 encoded - encoded using ascii characters //profile image
 	TotalRating DOUBLE DEFAULT NULL, //calculated by adding together all average values on each rated post
 	RatedPosts INTEGER DEFAULT 0, //all posts rated
 	TotalPosts INTEGER DEFAULT 0, //increase by 1 when a new post has been created (non-draft)
+	Followers INTEGER DEFAULT 0,
 	Followings VARCHAR(1400) DEFAULT NULL
 )
 
@@ -45,7 +47,7 @@ CREATE TABLE Ratings(
     ID INTEGER PRIMARY KEY AUTOINCREMENT,
 	UserId INTEGER NOT NULL,
 	PostId INTEGER NOT NULL,
-    Rating NUMERIC(1,1),
+    Value NUMERIC(1,1),
 	FOREIGN KEY(UserId) REFERENCES Users(Id),
     FOREIGN KEY(PostId) REFERENCES Posts(Id)
 )

@@ -20,13 +20,13 @@ namespace collaby_backend.Controllers
         }
 
         // GET api/reports
-
         [HttpGet]
         public ActionResult<IEnumerable<Report>> GetAll()
         {
             List<Report> ReportList = _context.Reports.OrderByDescending(o=>o.DateCreated).ToList();
             return ReportList;
         }
+
         [HttpGet("{reportId}")]
         public ActionResult<Report> Get(long reportId)
         {
@@ -57,12 +57,12 @@ namespace collaby_backend.Controllers
 
             return "Report has been successfully updated";
         }
+
         [HttpDelete]
         public async Task<string> Delete(Report report){
 
             _context.Entry(report).State = EntityState.Deleted;
             await _context.SaveChangesAsync();
-
             return "Your report has been deleted";
         }
 

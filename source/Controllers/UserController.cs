@@ -19,7 +19,7 @@ namespace collaby_backend.Controllers
             _context = context;
         }
 
-        // GET api/user
+        // GET api/users
         [HttpGet]
         public ActionResult<IEnumerable<User>> Get()
         {
@@ -74,6 +74,26 @@ namespace collaby_backend.Controllers
             return UserList;
         }
 
+        [HttpGet("followList/{followingString}")]
+        public ActionResult<IEnumerable<User>> FollowingList(String followingString){
+
+            List<User> followedUsers = new List<User>();
+            
+            if(followingString == null){
+                //no results found
+                return null;
+            }
+
+            foreach(String username in followingString.Split(";")){
+                User user = _context.Users.First(o=>o.UserName == username);
+                //need to confirm if return type is null if First method does not return a user
+                if (user != null){
+                    followedUsers.Add(user);
+                }
+            }
+            return followedUsers;
+        }
+
         [HttpPost]
         public async Task<string> POST(User user){
 
@@ -90,17 +110,61 @@ namespace collaby_backend.Controllers
 
             return "User has been successfully updated";
         }
-        private async Task UpdatePostCounter(User user){
-            
-            user.TotalPosts += 1;
-            _context.Entry(user).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
-        }
+
+        //admin only method
         private async Task BandUser(User user){
 
             user.IsBand = 1;
             _context.Entry(user).State = EntityState.Modified;
             await _context.SaveChangesAsync();
+
+        }
+
+        [HttpPut("follow/{username}")]
+        public async Task<string> addFollowing(long id, String username){
+
+            User user = _context.Users.First(obj=>obj.Id == id);
+            String followingString = user.Followings;
+
+            if(user.UserName==username){
+                return "Yeah... not going to let you follow yourself";
+            }
+            if(followingString == null){
+                user.Followings += username;
+            }else{
+                foreach(String follow in followingString.Split(";")){
+                    if(follow == username){
+                        return username+" is already being followed";
+                    }
+                }
+                user.Followings += ";"+username;
+            }
+
+            _context.Entry(user).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+            
+            return "Added "+username+" to your following list";
+        }
+
+        [HttpPut("unfollow/{username}")]
+        public async Task<string> removeFollowing(long id, String username){
+
+            User user = _context.Users.First(obj=>obj.Id == id);
+            String followingString = user.Followings;
+
+            if(user.Followings != null){
+
+                foreach(String follow in followingString.Split(";")){
+
+                    if(follow == username){
+                        _context.Entry(user).State = EntityState.Modified;
+                        await _context.SaveChangesAsync();
+                        return "Removed "+username+" from your following list";
+                    }
+                }
+            }
+
+            return "Unable to unfollow "+username+" because you're not currently following them";
         }
 
         [HttpDelete("{id}")]
@@ -116,6 +180,12 @@ namespace collaby_backend.Controllers
             await _context.SaveChangesAsync();
 
             return user;
+        }
+        [HttpPost("Test")]
+        public String[] Test(){
+            String testString = "adsf";
+            String[] testArray = testString.Split(";");
+            return testArray;
         }
 
     }
