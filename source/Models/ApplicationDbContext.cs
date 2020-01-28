@@ -33,7 +33,7 @@ namespace collaby_backend.Models
         {
             modelBuilder.Entity<Comment>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedNever();
+                entity.Property(e => e.Id);
 
                 entity.Property(e => e.IsDraft).HasDefaultValueSql("0");
 
@@ -54,7 +54,7 @@ namespace collaby_backend.Models
 
             modelBuilder.Entity<Post>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedNever();
+                entity.Property(e => e.Id);
 
                 entity.Property(e => e.DateCreated)
                     .HasColumnType("DATETIME")
@@ -77,8 +77,7 @@ namespace collaby_backend.Models
             modelBuilder.Entity<Rating>(entity =>
             {
                 entity.Property(e => e.Id)
-                    .HasColumnName("ID")
-                    .ValueGeneratedNever();
+                    .HasColumnName("ID");
 
                 entity.Property(e => e.Ratings).HasColumnType("NUMERIC(1,1)");
 
@@ -96,8 +95,7 @@ namespace collaby_backend.Models
             modelBuilder.Entity<Report>(entity =>
             {
                 entity.Property(e => e.Id)
-                    .HasColumnName("ID")
-                    .ValueGeneratedNever();
+                    .HasColumnName("ID");
 
                 entity.Property(e => e.DateCreated)
                     .HasColumnType("DATETIME")
@@ -120,7 +118,7 @@ namespace collaby_backend.Models
 
             modelBuilder.Entity<User>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedNever();
+                entity.Property(e => e.Id);
 
                 entity.Property(e => e.Email)
                     .IsRequired()

@@ -27,6 +27,7 @@ namespace collaby_backend.Controllers
             return ReportList;
         }
 
+        //GET api/reports/id
         [HttpGet("{reportId}")]
         public ActionResult<Report> Get(long reportId)
         {
@@ -34,6 +35,7 @@ namespace collaby_backend.Controllers
             return report;
         }
 
+        //GET api/reports/postId
         [HttpGet("post/{postId}")]
         public ActionResult<IEnumerable<Report>> GetPostReports(long postId)
         {

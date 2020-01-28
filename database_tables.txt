@@ -14,7 +14,7 @@ CREATE TABLE Users(
 	RatedPosts INTEGER DEFAULT 0, //all posts rated
 	TotalPosts INTEGER DEFAULT 0, //increase by 1 when a new post has been created (non-draft)
 	Followers INTEGER DEFAULT 0,
-	Followings VARCHAR(1400) DEFAULT NULL
+	Followings VARCHAR(1400) DEFAULT NULL //string of follower id's
 )
 
 considering creating a table or index for emails and usernames

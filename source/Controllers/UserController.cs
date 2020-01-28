@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using collaby_backend.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 namespace collaby_backend.Controllers
 {
@@ -13,10 +14,12 @@ namespace collaby_backend.Controllers
     public class UserController : ControllerBase
     {
         private ApplicationDbContext _context;
+        private ApplicationUser _userContext;
 
-        public UserController(ApplicationDbContext context)
+        public UserController(ApplicationDbContext context, ApplicationUser userContext)
         {
             _context = context;
+            _userContext = userContext;
         }
 
         // GET api/users
@@ -27,6 +30,7 @@ namespace collaby_backend.Controllers
             return UserList;
         }
         [HttpGet("{id}")]
+        [ValidateAntiForgeryToken]
         public ActionResult<User> Get(long id)
         {
             User user = _context.Users.First(obj=>obj.Id == id);
@@ -97,8 +101,10 @@ namespace collaby_backend.Controllers
         [HttpPost]
         public async Task<string> POST(User user){
 
+
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
+
             return "User has been successfully added";
         }
 

@@ -41,7 +41,8 @@ namespace collaby_backend.Controllers
             return post;
         }
 
-        [HttpGet("feed/{followingString}")]
+        [HttpGet("feed/{followingString}")] //for testing
+        //[HttpGet("feed")] //for launch
         public ActionResult<IEnumerable<Post>> Get(String followingString)
         {
             //10,000 ticks per milisecond
