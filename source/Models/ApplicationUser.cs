@@ -12,7 +12,7 @@ namespace collaby_backend.Models
         {
         }
 
-        public DbSet<UserModel> User { get; set; }
+        public DbSet<AppUser> User { get; set; }
     }
 
 }

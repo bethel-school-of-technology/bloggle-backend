@@ -34,21 +34,38 @@ namespace collaby_backend
         {
             services.AddCors();
 
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)  
-                .AddJwtBearer(options =>  
-                {  
-                    options.TokenValidationParameters = new TokenValidationParameters  
-                    {  
+            // Add framework services
+            services.AddDbContext<AppIdentityDbContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("Default"),
+                b => b.MigrationsAssembly("Default")));
+            
+            // add identity
+            var builder = services.AddIdentityCore<AppUser>(o =>
+            {
+                // configure identity options
+                o.Password.RequireDigit = false;
+                o.Password.RequireLowercase = false;
+                o.Password.RequireUppercase = false;
+                o.Password.RequireNonAlphanumeric = false;
+                o.Password.RequiredLength = 6;
+            });
+            builder = new IdentityBuilder(builder.UserType, typeof(IdentityRole), builder.Services);
+            builder.AddEntityFrameworkStores<ApplicationUser>().AddDefaultTokenProviders();
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
                         ValidateIssuer = true,
                         ValidateAudience = false,
-                        ValidateLifetime = true, 
+                        ValidateLifetime = true,
                         ValidateIssuerSigningKey = true,
-                        //ValidIssuer = Configuration["Jwt:Issuer"],  
-                        //ValidAudience = Configuration["Jwt:Issuer"],  
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Secret"]))  
-                    };  
-                }); 
-            
+                        ValidIssuer = Configuration["Jwt:Issuer"],
+                        //ValidAudience = Configuration["Jwt:Issuer"],
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Secret"]))
+                    };
+                });
 
             // configure jwt authentication
             //var appSettings = appSettingsSection.Get<AppSettings>();
@@ -74,14 +91,14 @@ namespace collaby_backend
             {
                 app.UseDeveloperExceptionPage();
             }
-
+            
+            app.UseCors();
             app.UseHttpsRedirection();
             app.UseRouting();
 
             app.UseAuthentication();
             app.UseAuthorization();
-            //app.UseStaticFiles();
-            //app.UseIdentity();
+
             //app.UseMvc();
 
             app.UseEndpoints(endpoints =>

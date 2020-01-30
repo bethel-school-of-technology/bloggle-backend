@@ -12,82 +12,93 @@ using collaby_backend.Models;
       
 namespace JWTAuthController.Controllers  
 {  
-    [Route("api/[controller]")]  
+    [Route("api/Login")]  
     [ApiController]  
     public class LoginController : Controller  
     {  
         private IConfiguration _config;
         private ApplicationUser _userContext;
+        //private String validation = null;
     
         public LoginController(IConfiguration config, ApplicationUser userContext)  
         {  
             _config = config;
             _userContext = userContext;
+            //validation = _userContext.User.FindAsync("");
         }  
         [AllowAnonymous]  
         [HttpPost]  
-        public IActionResult Login([FromBody]UserModel login)  
-        {  
-            IActionResult response = Unauthorized();  
-            var user = AuthenticateUser(login);  
-    
-            if (user != null)  
-            {  
-                var tokenString = GenerateJSONWebToken(user);  
-                response = Ok(new { token = tokenString });  
-            }  
-    
-            return response;  
-        }  
-    
-        private string GenerateJSONWebToken(UserModel userInfo)  
-        {  
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Secret"]));  
-            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);  
-
-            var claims = new[] {  
-                new Claim(JwtRegisteredClaimNames.Sub, userInfo.Username),  
-                new Claim(JwtRegisteredClaimNames.Email, userInfo.EmailAddress),  
-                new Claim("DateOfJoing", userInfo.DateOfJoing.ToString("yyyy-MM-dd")),  
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())  
-            };  
-    
-            var token = new JwtSecurityToken(_config["Jwt:Issuer"],  
-                _config["Jwt:Issuer"],  
-                claims,  
-                expires: DateTime.Now.AddMinutes(120),  
-                signingCredentials: credentials);  
-    
-            return new JwtSecurityTokenHandler().WriteToken(token);  
-        }  
-    
-        private UserModel AuthenticateUser(UserModel login)  
-        {  
-            UserModel user = null;  
-    
-            //Validate the User Credentials  
-            //Demo Purpose, I have Passed HardCoded User Information  
-            if (login.Username == "Jignesh")  
-            {  
-                user = new UserModel { Username = "Jignesh Trivedi", EmailAddress = "test.btest@gmail.com" };  
-            }  
-            return user;  
-        }
-        [Authorize]  
-        [HttpGet]
-        public ActionResult<IEnumerable<string>> Get()  
+        public IActionResult Login([FromBody]AppUser login)  
         {
-            return new string[] { "value1", "value2", "value3", "value4", "value5" };  
+            IActionResult response = Unauthorized();
+            var user = AuthenticateUser(login);
+
+            if (user != null)
+            {
+                var tokenString = GenerateJSONWebToken(user);
+                var decodedString = new JwtSecurityTokenHandler().ReadJwtToken(tokenString);
+                //response = Ok(new { token = tokenString });
+                response = Ok(new { token = decodedString });
+            }
+            return response;
+        }
+    
+        private string GenerateJSONWebToken(AppUser userInfo)
+        {
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Secret"]));
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+            var claims = new[] {
+                new Claim(JwtRegisteredClaimNames.Sub, userInfo.UserName),
+                new Claim(JwtRegisteredClaimNames.Email, userInfo.Email),
+                new Claim("CreationDate", userInfo.CreationDate.ToString("yyyy-MM-dd")),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+                //new Claim("Role", userInfo.Role)
+            };
+
+            var token = new JwtSecurityToken(_config["Jwt:Issuer"],
+                null,
+                claims,
+                expires: DateTime.Now.AddMinutes(120),
+                signingCredentials: credentials);
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }  
+    
+        private AppUser AuthenticateUser(AppUser login)
+        {
+            AppUser user = null;
+    
+            //Validate the User Credentials
+            //Demo Purpose, I have Passed HardCoded User Information
+            if (login.UserName == "Jignesh")
+            {
+                user = new AppUser {UserName = "Jignesh Trivedi", Email = "test.btest@gmail.com"};
+            }
+            return user;
+        }
+        
+        [Authorize]
+        [HttpGet]
+        public ActionResult<IEnumerable<string>> Get()
+        {
+            return new string[] { "value1", "value2", "value3", "value4", "value5" };
         }
 
         [AllowAnonymous]
         [HttpPost("newUser")]
-        public async Task<string> Create(UserModel user)
+        public async Task<string> Create(AppUser user)
         {
             _userContext.Add(user);
-            //user.Password = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Secret"]));
+            //user.PasswordHash = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Secret"]));
             await _userContext.SaveChangesAsync();
             return "new user created";
         }
-    }  
-}  
+
+        [AllowAnonymous]
+        [HttpGet("appSettings")]
+        public ActionResult <string> Getter()
+        {
+            return _config["Jwt:Secret"] +" "+ _config["Jwt:Issuer"];
+        }
+    }
+}

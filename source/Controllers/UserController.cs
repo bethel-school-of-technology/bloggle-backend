@@ -169,7 +169,6 @@ namespace collaby_backend.Controllers
                     }
                 }
             }
-
             return "Unable to unfollow "+username+" because you're not currently following them";
         }
 
@@ -193,6 +192,5 @@ namespace collaby_backend.Controllers
             String[] testArray = testString.Split(";");
             return testArray;
         }
-
     }
 }
