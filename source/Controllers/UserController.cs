@@ -6,34 +6,39 @@ using Microsoft.AspNetCore.Mvc;
 using collaby_backend.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace collaby_backend.Controllers
 {
     [Route("api/users")]
     [ApiController]
+    [Authorize]
     public class UserController : ControllerBase
     {
         private ApplicationDbContext _context;
-        private ApplicationUser _userContext;
 
-        public UserController(ApplicationDbContext context, ApplicationUser userContext)
+        public UserController(ApplicationDbContext context)
         {
             _context = context;
-            _userContext = userContext;
         }
 
         // GET api/users
         [HttpGet]
+        [AllowAnonymous]
         public ActionResult<IEnumerable<User>> Get()
         {
             List<User> UserList = _context.Users.ToList();
             return UserList;
         }
-        [HttpGet("{id}")]
-        [ValidateAntiForgeryToken]
-        public ActionResult<User> Get(long id)
+
+        [HttpGet("user/{username}")] //profile page
+        //[ValidateAntiForgeryToken]
+        [AllowAnonymous]
+        public ActionResult<User> Get(String username)
         {
-            User user = _context.Users.First(obj=>obj.Id == id);
+            User user = _context.Users.First(obj=>obj.UserName == username);
             return user;
         }
 
@@ -47,6 +52,7 @@ namespace collaby_backend.Controllers
         }*/
 
         [HttpGet("usernameSearch/{username}")]
+        [AllowAnonymous]
         public ActionResult<User> UserNameSearch(String username)
         {
             User user = _context.Users.First(obj=>obj.UserName == username);
@@ -54,18 +60,19 @@ namespace collaby_backend.Controllers
         }
 
         [HttpGet("nameSearch/{name}")]
+        [AllowAnonymous]
         public ActionResult<IEnumerable<User>> NameSearch(String name)
         {
             List<User> UserList;
             String[] fullName;
 
-            if(name.Contains(' ')){
+            if(name.Contains('_')){
                 //search by last name if first character is a space
-                if(name[0] == ' '){
-                    UserList = _context.Users.Where(b => b.LastName == name).ToList();
+                if(name[0] == '_'){
+                    UserList = _context.Users.Where(b => b.LastName == name.Replace("_","")).ToList();
                 //otherwise find any matching first and last names
                 }else{
-                    fullName = name.Split();
+                    fullName = name.Split("_");
                     UserList = _context.Users.Where(b => (b.FirstName == fullName[0]) && (b.LastName == fullName[1])).ToList();
                 }
             //search by first
@@ -79,9 +86,11 @@ namespace collaby_backend.Controllers
         }
 
         [HttpGet("followList/{followingString}")]
-        public ActionResult<IEnumerable<User>> FollowingList(String followingString){
+        public ActionResult<IEnumerable<User>> FollowingList([FromBody]String followingString,[FromHeader(Name = "token")]String jwt){
 
             List<User> followedUsers = new List<User>();
+            var decodedJwt = new JwtSecurityTokenHandler().ReadJwtToken(jwt);
+            var payload = decodedJwt.Payload;
             
             if(followingString == null){
                 //no results found
@@ -99,7 +108,7 @@ namespace collaby_backend.Controllers
         }
 
         [HttpPost]
-        public async Task<string> POST(User user){
+        public async Task<string> POST([FromBody]User user){
 
 
             _context.Users.Add(user);
@@ -118,13 +127,12 @@ namespace collaby_backend.Controllers
         }
 
         //admin only method
-        private async Task BandUser(User user){
+        /*private async Task BandUser(User user){
 
             user.IsBand = 1;
             _context.Entry(user).State = EntityState.Modified;
             await _context.SaveChangesAsync();
-
-        }
+        }*/
 
         [HttpPut("follow/{username}")]
         public async Task<string> addFollowing(long id, String username){

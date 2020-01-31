@@ -44,7 +44,7 @@ namespace collaby_backend.Controllers
         }
 
         [HttpPost]
-        public async Task<string> POST(Report post){
+        public async Task<string> POST([FromBody]Report post){
 
             _context.Reports.Add(post);
             await _context.SaveChangesAsync();
@@ -52,7 +52,7 @@ namespace collaby_backend.Controllers
         }
 
         [HttpPut]
-        public async Task<string> Edit(Report report){
+        public async Task<string> Edit([FromBody]Report report){
 
             _context.Entry(report).State = EntityState.Modified;
             await _context.SaveChangesAsync();
@@ -61,7 +61,7 @@ namespace collaby_backend.Controllers
         }
 
         [HttpDelete]
-        public async Task<string> Delete(Report report){
+        public async Task<string> Delete([FromBody]Report report){
 
             _context.Entry(report).State = EntityState.Deleted;
             await _context.SaveChangesAsync();

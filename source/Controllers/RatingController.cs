@@ -28,21 +28,22 @@ namespace collaby_backend.Controllers
         }
 
         [HttpPost]
-        public async Task<string> POST(Rating rating){
+        public async Task<string> POST([FromBody]Rating rating){
 
             _context.Ratings.Add(rating);
             Post post =_context.Posts.First(o=>o.Id == rating.PostId);
             post.RatingCount += 1;
-            post.RatingValue += rating.Ratings;
+            post.RatingValue += rating.Value;
             _context.Entry(post).State = EntityState.Modified;
             await _context.SaveChangesAsync();
             return "Rating has been successfully added";
         }
+        
         [HttpPut]
-        public async Task<string> Edit(Rating rating){
+        public async Task<string> Edit([FromBody]Rating rating){
 
             Post post =_context.Posts.First(o=>o.Id == rating.PostId);
-            post.RatingValue += rating.Ratings - _context.Ratings.First(o=>o.Id == rating.Id).Ratings;
+            post.RatingValue += rating.Value - _context.Ratings.First(o=>o.Id == rating.Id).Value;
 
             _context.Entry(post).State = EntityState.Modified;
             _context.Entry(rating).State = EntityState.Modified;

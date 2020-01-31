@@ -32,25 +32,11 @@ namespace collaby_backend
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddCors();
-
-            // Add framework services
-            services.AddDbContext<AppIdentityDbContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("Default"),
-                b => b.MigrationsAssembly("Default")));
-            
-            // add identity
-            var builder = services.AddIdentityCore<AppUser>(o =>
+            services.AddCors(options =>
             {
-                // configure identity options
-                o.Password.RequireDigit = false;
-                o.Password.RequireLowercase = false;
-                o.Password.RequireUppercase = false;
-                o.Password.RequireNonAlphanumeric = false;
-                o.Password.RequiredLength = 6;
+                options.AddPolicy("AllowOrigin",
+                    builder => builder.WithOrigins("http://localhost:4200"));
             });
-            builder = new IdentityBuilder(builder.UserType, typeof(IdentityRole), builder.Services);
-            builder.AddEntityFrameworkStores<ApplicationUser>().AddDefaultTokenProviders();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
@@ -79,7 +65,7 @@ namespace collaby_backend
 
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlite(connectionString));
-            services.AddDbContext<ApplicationUser>(options =>
+            services.AddDbContext<ApplicationUserDb>(options =>
                 options.UseSqlite("Data Source=user.db"));
                 //options.UseSqlite(Configuration.GetConnectionString(connectionString)));
         }
@@ -91,6 +77,11 @@ namespace collaby_backend
             {
                 app.UseDeveloperExceptionPage();
             }
+            //use to test with postman
+            /*app.UseCors(builder => builder
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader());*/
             
             app.UseCors();
             app.UseHttpsRedirection();

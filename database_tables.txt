@@ -1,14 +1,9 @@
 CREATE TABLE Users(
     Id INTEGER PRIMARY KEY AUTOINCREMENT,
     UserName VARCHAR(40) NOT NULL UNIQUE,
-    Password VARCHAR(80) NOT NULL,
-	Email VARCHAR(40) NOT NULL UNIQUE,
     FirstName VARCHAR(40) NOT NULL,
     LastName VARCHAR(40) NOT NULL,
     Location VARCHAR(40) NOT NULL,
-	DateCreated DATETIME DEFAULT(datetime('now')),
-	IsAdmin INTEGER DEFAULT 0 NOT NULL,
-	IsBand INTEGER DEFAULT 0 NOT NULL,
     Img CHAR(10000) DEFAULT NULL, //base64 encoded - encoded using ascii characters //profile image
 	TotalRating DOUBLE DEFAULT NULL, //calculated by adding together all average values on each rated post
 	RatedPosts INTEGER DEFAULT 0, //all posts rated
@@ -58,6 +53,6 @@ CREATE TABLE Reports(
 	PostId INTEGER NOT NULL,
 	DateCreated DATETIME DEFAULT(datetime('now')),
 	Message VARCHAR(12500) NOT NULL,
-    FOREIGN KEY(PserId) REFERENCES Users(Id),
+    FOREIGN KEY(UserId) REFERENCES Users(Id),
     FOREIGN KEY(PostId) REFERENCES Posts(Id)
 )

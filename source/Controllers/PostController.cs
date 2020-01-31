@@ -5,11 +5,13 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using collaby_backend.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Cors;
 
 namespace collaby_backend.Controllers
 {
     [Route("api/posts")]
     [ApiController]
+    [EnableCors("AllowOrigin")]
     public class PostController : ControllerBase
     {
         private ApplicationDbContext _context;
@@ -19,37 +21,37 @@ namespace collaby_backend.Controllers
             _context = context;
         }
 
-        [HttpGet]
+        [HttpGet] //get all posts
         public ActionResult<IEnumerable<Post>> Get()
         {
             List<Post> PostList = _context.Posts.ToList();
             return PostList;
         }
 
-        [HttpGet("{userId}")]
+        [HttpGet("{userId}")] //get posts from sepecific user
         public ActionResult<IEnumerable<Post>> GetUserPosts(long userId)
         {
             List<Post> PostList = _context.Posts.Where(o=>o.UserId == userId).OrderByDescending(o=>o.DateCreated).ToList();
             return PostList;
         }
 
-        // GET api/posts
-        [HttpGet("single/{postId}")]
+        // GET api/posts/single/
+        [HttpGet("single/{postId}")] //get specific post
         public ActionResult<Post> GetPost(long postId)
         {
             Post post = _context.Posts.First(o=>o.Id == postId);
             return post;
         }
 
-        [HttpGet("feed/{followingString}")] //for testing
-        //[HttpGet("feed")] //for launch
-        public ActionResult<IEnumerable<Post>> Get(String followingString)
+        //[HttpGet("feed/{followingString}")] //for testing
+        [HttpGet("feed")] //for launch
+        public ActionResult<IEnumerable<Post>> Get([FromBody]String followingString)
         {
             //10,000 ticks per milisecond
             //long month = 25920000000000; //ticks in a month
             long week = 6048000000000; //ticks in a week
             //may not need to convert to universal time
-            DateTime pastTime =  new DateTime(DateTime.Now.ToUniversalTime().Ticks - week*2);
+            DateTime pastTime =  new DateTime(DateTime.UtcNow.Ticks - week*2);
             List<Post> PostList = _context.Posts.Where(o=>o.DateCreated > pastTime).OrderByDescending(o=>o.DateCreated).ToList();
             List<Post> Feed = new List<Post>();
             
@@ -69,7 +71,7 @@ namespace collaby_backend.Controllers
         }
 
         [HttpPost]
-        public async Task<string> POST(Post post){
+        public async Task<string> POST([FromBody]Post post){
 
             if(post.IsDraft == 1){
                 post.DateCreated = null;
@@ -85,7 +87,7 @@ namespace collaby_backend.Controllers
         }
 
         [HttpPut]
-        public async Task<string> Edit(Post post){
+        public async Task<string> Edit([FromBody]Post post){
 
             if(post.IsDraft == 0){
 
@@ -107,7 +109,7 @@ namespace collaby_backend.Controllers
         }
 
         [HttpDelete]
-        public async Task<string> Delete(Post post){
+        public async Task<string> Delete([FromBody]Post post){
 
             if(post.IsDraft == 0){
                 User user = _context.Users.First(o=>o.Id == post.UserId);
