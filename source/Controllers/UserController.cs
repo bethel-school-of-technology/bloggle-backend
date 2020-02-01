@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using collaby_backend.Models;
+using collaby_backend.encrpyt;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
@@ -14,14 +15,16 @@ namespace collaby_backend.Controllers
 {
     [Route("api/users")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class UserController : ControllerBase
     {
         private ApplicationDbContext _context;
+        private ApplicationUserDb _appUserContext;
 
-        public UserController(ApplicationDbContext context)
+        public UserController(ApplicationDbContext context, ApplicationUserDb appUserContext)
         {
             _context = context;
+            _appUserContext = appUserContext;
         }
 
         // GET api/users
@@ -107,14 +110,26 @@ namespace collaby_backend.Controllers
             return followedUsers;
         }
 
+        [AllowAnonymous]
         [HttpPost]
-        public async Task<string> POST([FromBody]User user){
+        public async Task<string> Create([FromBody]CreateUser user)
+        {
+            DateTime currentTime = DateTime.UtcNow;
+            string timeString = (currentTime.Ticks/10000).ToString(); //salt string for hashing
+            user.Password = hashing.GenerateSHA256String(user.Password,timeString);
 
+            try{
+                AppUser privateInfo = new AppUser{ UserName = user.UserName, Password = user.Password, Email = user.Email, DateCreated = currentTime };
+                _appUserContext.Add(privateInfo);
+                await _appUserContext.SaveChangesAsync(); //first confirm if email and username are unquie (should be auto handled by database)
+            }catch{
+                return "Username or Email has already been used";
+            }
 
-            _context.Users.Add(user);
+            User publicInfo = new User{ UserName = user.UserName, FirstName = user.FirstName, LastName = user.LastName, Location = user.Location, Img = user.Img};
+            _context.Add(publicInfo);
             await _context.SaveChangesAsync();
-
-            return "User has been successfully added";
+            return "new user created";
         }
 
         [HttpPut]

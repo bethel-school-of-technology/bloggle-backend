@@ -93,28 +93,6 @@ namespace collaby_backend.Controllers
         }
 
         [AllowAnonymous]
-        [HttpPost("newUser")]
-        public async Task<string> Create([FromBody]CreateUser user)
-        {
-            DateTime currentTime = DateTime.UtcNow;
-            string timeString = (currentTime.Ticks/10000).ToString(); //salt string for hashing
-            user.Password = hashing.GenerateSHA256String(user.Password,timeString);
-
-            try{
-                AppUser privateInfo = new AppUser{ UserName = user.UserName, Password = user.Password, Email = user.Email, DateCreated = currentTime };
-                _appUserContext.Add(privateInfo);
-                await _userContext.SaveChangesAsync(); //first confirm if email and username are unquie (should be auto handled by database)
-            }catch{
-                return "Username or Email has already been used";
-            }
-
-            User publicInfo = new User{ UserName = user.UserName, FirstName = user.FirstName, LastName = user.LastName, Location = user.Location, Img = user.Img};
-            _userContext.Add(publicInfo);
-            await _userContext.SaveChangesAsync();
-            return "new user created";
-        }
-
-        [AllowAnonymous]
         [HttpGet("appSettings")]
         public ActionResult <string> Getter()
         {

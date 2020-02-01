@@ -32,11 +32,12 @@ namespace collaby_backend
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddCors(options =>
+            /*services.AddCors(options =>
             {
                 options.AddPolicy("AllowOrigin",
                     builder => builder.WithOrigins("http://localhost:4200"));
-            });
+            });*/
+            services.AddCors();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
@@ -78,19 +79,24 @@ namespace collaby_backend
                 app.UseDeveloperExceptionPage();
             }
             //use to test with postman
-            /*app.UseCors(builder => builder
+            app.UseCors(builder => builder
                 .AllowAnyOrigin()
                 .AllowAnyMethod()
-                .AllowAnyHeader());*/
+                .AllowAnyHeader());
             
-            app.UseCors();
             app.UseHttpsRedirection();
             app.UseRouting();
 
             app.UseAuthentication();
             app.UseAuthorization();
 
-            //app.UseMvc();
+            //use to test with postman
+            app.UseCors(builder => builder
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader());
+            //app.UseCors();
+            app.UseMvc();
 
             app.UseEndpoints(endpoints =>
             {

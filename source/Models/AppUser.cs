@@ -8,12 +8,13 @@ namespace collaby_backend.Models
 {
     public class AppUser
     {
+        public long Id { get; set; }
         public string Email { get; set; }
         public string UserName { get; set; }
         public string Password { get; set; }
         public int IsAdmin { get; set; }
         public int IsBand { get; set;}
-        public DateTime DateCreated = DateTime.UtcNow; //salt for hashing
+        public DateTime DateCreated { get; set; }
 
     }
 }

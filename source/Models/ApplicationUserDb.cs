@@ -29,13 +29,13 @@ namespace collaby_backend.Models
         {
             modelBuilder.Entity<AppUser>(entity =>
             {
-                entity.HasNoKey();
-
                 entity.HasIndex(e => e.Email)
                     .IsUnique();
 
                 entity.HasIndex(e => e.UserName)
                     .IsUnique();
+
+                entity.Property(e => e.Id);
 
                 entity.Property(e => e.DateCreated)
                     .IsRequired()
@@ -47,7 +47,7 @@ namespace collaby_backend.Models
 
                 entity.Property(e => e.Password)
                     .IsRequired()
-                    .HasColumnType("VARCHAR(80)");
+                    .HasColumnType("VARCHAR(65)");
 
                 entity.Property(e => e.UserName)
                     .IsRequired()
