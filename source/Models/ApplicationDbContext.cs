@@ -35,6 +35,10 @@ namespace collaby_backend.Models
             {
                 entity.Property(e => e.Id);
 
+                entity.Property(e => e.DateCreated)
+                    .HasColumnType("DATETIME")
+                    .HasDefaultValueSql("datetime('now')");
+
                 entity.Property(e => e.IsDraft).HasDefaultValueSql("0");
 
                 entity.Property(e => e.Message)
@@ -68,6 +72,10 @@ namespace collaby_backend.Models
 
                 entity.Property(e => e.RatingValue).HasColumnType("DOUBLE");
 
+                entity.Property(e => e.Title)
+                    .IsRequired()
+                    .HasColumnType("VARCHAR(40)");
+
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.Posts)
                     .HasForeignKey(d => d.UserId)
@@ -76,9 +84,7 @@ namespace collaby_backend.Models
 
             modelBuilder.Entity<Rating>(entity =>
             {
-                entity.Property(e => e.Id)
-                    .HasColumnName("ID")
-                    ;
+                entity.Property(e => e.Id);
 
                 entity.Property(e => e.Value).HasColumnType("NUMERIC(1,1)");
 
@@ -95,9 +101,7 @@ namespace collaby_backend.Models
 
             modelBuilder.Entity<Report>(entity =>
             {
-                entity.Property(e => e.Id)
-                    .HasColumnName("ID")
-                    ;
+                entity.Property(e => e.Id);
 
                 entity.Property(e => e.DateCreated)
                     .HasColumnType("DATETIME")
@@ -127,7 +131,7 @@ namespace collaby_backend.Models
 
                 entity.Property(e => e.FirstName)
                     .IsRequired()
-                    .HasColumnType("VARCHAR(20)");
+                    .HasColumnType("VARCHAR(40)");
 
                 entity.Property(e => e.Followers).HasDefaultValueSql("0");
 
@@ -137,11 +141,11 @@ namespace collaby_backend.Models
 
                 entity.Property(e => e.LastName)
                     .IsRequired()
-                    .HasColumnType("VARCHAR(20)");
+                    .HasColumnType("VARCHAR(40)");
 
                 entity.Property(e => e.Location)
                     .IsRequired()
-                    .HasColumnType("VARCHAR(50)");
+                    .HasColumnType("VARCHAR(40)");
 
                 entity.Property(e => e.RatedPosts).HasDefaultValueSql("0");
 
@@ -151,7 +155,7 @@ namespace collaby_backend.Models
 
                 entity.Property(e => e.UserName)
                     .IsRequired()
-                    .HasColumnType("VARCHAR(30)");
+                    .HasColumnType("VARCHAR(40)");
             });
 
             OnModelCreatingPartial(modelBuilder);

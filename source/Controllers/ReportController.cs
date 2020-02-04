@@ -27,15 +27,15 @@ namespace collaby_backend.Controllers
             return ReportList;
         }
 
-        //GET api/reports/id
-        [HttpGet("{reportId}")]
+        //GET api/reports/report/id
+        [HttpGet("report/{reportId}")]
         public ActionResult<Report> Get(long reportId)
         {
             Report report = _context.Reports.First(o=>o.Id == reportId);
             return report;
         }
 
-        //GET api/reports/postId
+        //GET api/reports/post/postId
         [HttpGet("post/{postId}")]
         public ActionResult<IEnumerable<Report>> GetPostReports(long postId)
         {
@@ -49,15 +49,6 @@ namespace collaby_backend.Controllers
             _context.Reports.Add(post);
             await _context.SaveChangesAsync();
             return "Report has been successfully added";
-        }
-
-        [HttpPut]
-        public async Task<string> Edit([FromBody]Report report){
-
-            _context.Entry(report).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
-
-            return "Report has been successfully updated";
         }
 
         [HttpDelete]

@@ -14,11 +14,12 @@ namespace collaby_backend.Models
 
         public long Id { get; set; }
         public long UserId { get; set; }
+        public string Title { get; set; }
         public string Message { get; set; }
         public DateTime? DateCreated { get; set; }
         public DateTime? DateModified { get; set; }
         public double? RatingValue { get; set; }
-        public long? RatingCount { get; set; }
+        public long RatingCount { get; set; }
         public long IsDraft { get; set; }
         public long TotalComments { get; set; }
 

@@ -17,14 +17,15 @@ considering creating a table or index for emails and usernames
 CREATE TABLE Posts(
     Id INTEGER PRIMARY KEY AUTOINCREMENT,
 	UserId INTEGER NOT NULL,
+	Title VARCHAR(40) NOT NULL,
     Message VARCHAR(12500) NOT NULL,
     DateCreated DATETIME DEFAULT(datetime('now')),
     DateModified DATETIME DEFAULT NULL,
-	RatingValue DOUBLE DEFAULT NULL, //updated when a new rating is given
+	RatingValue DOUBLE DEFAULT NULL, //all rating values added together (updated when a new rating is given)
     RatingCount INTEGER DEFAULT NULL, //updated when a new rating is given
 	IsDraft INTEGER DEFAULT 0 NOT NULL,
 	TotalComments INTEGER DEFAULT 0 NOT NULL,
-	FOREIGN KEY(userID) REFERENCES Users(ID)
+	FOREIGN KEY(UserId) REFERENCES Users(Id)
 )
 
 CREATE TABLE Comments(
@@ -33,13 +34,14 @@ CREATE TABLE Comments(
 	UserId INTEGER NOT NULL,
 	PostId INTEGER NOT NULL,
 	IsDraft INTEGER DEFAULT 0,
+	DateCreated DATETIME DEFAULT(datetime('now')),
 	ReportCount INTEGER DEFAULT NULL,
-    FOREIGN KEY(userId) REFERENCES Users(Id),
-    FOREIGN KEY(postId) REFERENCES Posts(Id)
+    FOREIGN KEY(UserId) REFERENCES Users(Id),
+    FOREIGN KEY(PostId) REFERENCES Posts(Id)
 )
 
 CREATE TABLE Ratings(
-    ID INTEGER PRIMARY KEY AUTOINCREMENT,
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
 	UserId INTEGER NOT NULL,
 	PostId INTEGER NOT NULL,
     Value NUMERIC(1,1),
@@ -48,7 +50,7 @@ CREATE TABLE Ratings(
 )
 
 CREATE TABLE Reports(
-    ID INTEGER PRIMARY KEY AUTOINCREMENT,
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
 	UserId INTEGER NOT NULL,
 	PostId INTEGER NOT NULL,
 	DateCreated DATETIME DEFAULT(datetime('now')),

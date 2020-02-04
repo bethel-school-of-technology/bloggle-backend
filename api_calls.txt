@@ -1,0 +1,35 @@
+Needed headers:
+"Content-Type" : "application/json"
+"Authorization" : "Bearer token_value"
+
+Login Controller methods:
+POST: api/Login //returns an access token.
+
+Posts Controller methods: api/posts
+GET: //get all posts in descending order by date created
+GET: user/{userId} //get all posts from specific using their Id
+GET: post/{postId} //get specific post
+GET: feed //get all recent posts from those you follow
+POST: {Message:string, UserId:int, IsDraft:int (not required)} //submit a post by the currently logged in user. Can give a value to IsDraft
+PUT: {Post}//edits a prexisting post by logged in user
+DELETE: {Post}//deletes a prexisting post from logged in user
+
+Comment Controller Methods: api/comments
+GET: post/{postId} //get all comments for post
+GET comment/{comment id} //get a specific comment
+POST: {Message:string, UserId:int, PostId:int}
+PUT: {Comment}
+DELETE: {Comment}
+
+Rating Controller Methods: api/ratings
+GET: {PostId,UserId}
+POST: {PostId,UserId}
+PUT: {Rating obj}
+DELETE: {Rating obj}
+
+Report Controller Methods: api/reports
+GET: //grab all submitted reports. They are in descending order(admin only)
+GET: report/{reportId} //grab a specific report(admin only)
+GET: post/{postId} //grab all reports about a post (admin only)
+POST: {PostId:int, UserId:int}//allows a user to post a report
+DELETE: {Report obj}(admin only)

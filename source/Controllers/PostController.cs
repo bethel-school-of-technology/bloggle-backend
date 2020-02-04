@@ -28,7 +28,7 @@ namespace collaby_backend.Controllers
             return PostList;
         }
 
-        [HttpGet("{userId}")] //get posts from sepecific user
+        [HttpGet("user/{userId}")] //get posts from sepecific user
         public ActionResult<IEnumerable<Post>> GetUserPosts(long userId)
         {
             List<Post> PostList = _context.Posts.Where(o=>o.UserId == userId).OrderByDescending(o=>o.DateCreated).ToList();
@@ -36,7 +36,7 @@ namespace collaby_backend.Controllers
         }
 
         // GET api/posts/single/
-        [HttpGet("single/{postId}")] //get specific post
+        [HttpGet("post/{postId}")] //get specific post
         public ActionResult<Post> GetPost(long postId)
         {
             Post post = _context.Posts.First(o=>o.Id == postId);
@@ -47,6 +47,9 @@ namespace collaby_backend.Controllers
         [HttpGet("feed")] //for launch
         public ActionResult<IEnumerable<Post>> Get([FromBody]String followingString)
         {
+            if(followingString==null || followingString==""){
+                return NotFound();
+            }
             //10,000 ticks per milisecond
             //long month = 25920000000000; //ticks in a month
             long week = 6048000000000; //ticks in a week
@@ -89,9 +92,13 @@ namespace collaby_backend.Controllers
         [HttpPut]
         public async Task<string> Edit([FromBody]Post post){
 
+            Post currentPost = _context.Posts.First(o=>o.Id == post.Id);
+            if(currentPost == null)
+                return "Cannot update a post that hasn't been created";
+
             if(post.IsDraft == 0){
 
-                Post currentPost = _context.Posts.First(o=>o.Id == post.Id);
+                //Post currentPost = _context.Posts.First(o=>o.Id == post.Id);
                 //if the draft state changes add 1 to total posts for the user that posted it
                 if (currentPost.IsDraft == 1){
                     User user = _context.Users.First(o=>o.Id == post.UserId);

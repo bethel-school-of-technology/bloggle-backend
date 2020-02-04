@@ -68,7 +68,6 @@ namespace collaby_backend
                 options.UseSqlite(connectionString));
             services.AddDbContext<ApplicationUserDb>(options =>
                 options.UseSqlite("Data Source=user.db"));
-                //options.UseSqlite(Configuration.GetConnectionString(connectionString)));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -78,6 +77,7 @@ namespace collaby_backend
             {
                 app.UseDeveloperExceptionPage();
             }
+
             //use to test with postman
             app.UseCors(builder => builder
                 .AllowAnyOrigin()
@@ -90,13 +90,9 @@ namespace collaby_backend
             app.UseAuthentication();
             app.UseAuthorization();
 
-            //use to test with postman
-            app.UseCors(builder => builder
-                .AllowAnyOrigin()
-                .AllowAnyMethod()
-                .AllowAnyHeader());
+
             //app.UseCors();
-            app.UseMvc();
+            //app.UseMvc();
 
             app.UseEndpoints(endpoints =>
             {

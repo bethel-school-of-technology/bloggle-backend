@@ -21,16 +21,14 @@ namespace collaby_backend.encrpyt{
         {
             char[] char_arr = username.ToCharArray();
             foreach(char character in char_arr){
-                if((int)character<=48 && (int)character>=57){
+                int asciiVal = (int)character;
+
+                if(asciiVal>=65 && asciiVal<=90){
                     continue;
-                }else if((int)character<=65 && (int)character>=90){
-                    continue;
-                }else if((int)character<=97 && (int)character>=122){
-                    continue;
-                }else if((int)character == 95){
+                }else if(asciiVal>=97 && asciiVal<=122){
                     continue;
                 }else{
-                    return "Cannot use the character"+character+"in Username";
+                    return "Cannot use the character"+character+"in first or last name";
                 }
             }
             return null;

@@ -21,9 +21,9 @@ namespace collaby_backend.Controllers
 
         // GET api/posts
         [HttpGet]
-        public ActionResult<Rating> Get(long postId, long userId)
+        public ActionResult<Rating> Get(Rating userRating)
         {
-            Rating rating = _context.Ratings.First(o=>o.PostId == postId && o.UserId == userId);
+            Rating rating = _context.Ratings.First(o=>o.PostId == userRating.PostId && o.UserId == userRating.UserId);
             return rating;
         }
 

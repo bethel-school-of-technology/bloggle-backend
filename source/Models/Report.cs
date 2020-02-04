@@ -10,7 +10,6 @@ namespace collaby_backend.Models
         public long PostId { get; set; }
         public DateTime DateCreated { get; set; }
         public string Message { get; set; }
-
         public virtual Post Post { get; set; }
         public virtual User User { get; set; }
     }
