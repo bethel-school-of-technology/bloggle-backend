@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using collaby_backend.Models;
-using collaby_backend.encrpyt;
+using collaby_backend.Helper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
@@ -114,9 +114,20 @@ namespace collaby_backend.Controllers
         [HttpPost]
         public async Task<string> Create([FromBody]CreateUser user)
         {
+            string[] resultArr = new string[4];
+
+            resultArr[0]=Verify.ValidateEmail(user.Email);
+            resultArr[1]=Verify.ValidateName(new string[]{user.FirstName, user.LastName});
+            resultArr[2]=Verify.ValidateUserName(user.UserName);
+            resultArr[3]=Verify.ValidatePassword(user.Password);
+
+            foreach(string result in resultArr){
+                if(result != null){ return result; }
+            }
+
             DateTime currentTime = DateTime.UtcNow;
             string timeString = (currentTime.Ticks/10000).ToString(); //salt string for hashing
-            user.Password = hashing.GenerateSHA256String(user.Password,timeString);
+            user.Password = Hashing.GenerateSHA256String(user.Password,timeString);
 
             try{
                 AppUser privateInfo = new AppUser{ UserName = user.UserName, Password = user.Password, Email = user.Email, DateCreated = currentTime };
@@ -134,6 +145,12 @@ namespace collaby_backend.Controllers
 
         [HttpPut]
         public async Task<string> Edit(User user){
+
+            string[] resultArr = new string[4];
+
+            resultArr[0]=Verify.ValidateName(new string[]{user.FirstName, user.LastName});
+            resultArr[1]=Verify.ValidateUserName(user.UserName);
+            //resultArr[2]=Verify.ValidatePassword(user.Password);
 
             _context.Entry(user).State = EntityState.Modified;
             await _context.SaveChangesAsync();

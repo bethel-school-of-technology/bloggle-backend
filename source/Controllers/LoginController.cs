@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Cryptography;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using collaby_backend.Models;
-using collaby_backend.encrpyt;
+using collaby_backend.Helper;
 using Microsoft.EntityFrameworkCore;
 
       
@@ -77,7 +77,7 @@ namespace collaby_backend.Controllers
         {
             AppUser user = _appUserContext.AppUsers.First(o => o.Email == login.Email);
             string timeString = (user.DateCreated.Ticks/10000).ToString();
-            string loginHash = hashing.GenerateSHA256String(login.Password,timeString);
+            string loginHash = Hashing.GenerateSHA256String(login.Password,timeString);
 
             if(user.Password != loginHash){ 
                 return null; 

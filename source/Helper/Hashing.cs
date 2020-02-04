@@ -2,9 +2,9 @@ using System;
 using System.Text;
 using System.Security.Cryptography;
 
-namespace collaby_backend.encrpyt{
+namespace collaby_backend.Helper{
 
-    class hashing{
+    class Hashing{
 
         public static string GenerateSHA256String(string inputString, string salt)
         {
