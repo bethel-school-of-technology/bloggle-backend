@@ -24,14 +24,14 @@ namespace collaby_backend.Controllers
         [HttpGet] //get all posts
         public ActionResult<IEnumerable<Post>> Get()
         {
-            List<Post> PostList = _context.Posts.ToList();
+            List<Post> PostList = _context.Posts.Where(o=>o.IsDraft != 1).ToList();
             return PostList;
         }
 
         [HttpGet("user/{userId}")] //get posts from sepecific user
         public ActionResult<IEnumerable<Post>> GetUserPosts(long userId)
         {
-            List<Post> PostList = _context.Posts.Where(o=>o.UserId == userId).OrderByDescending(o=>o.DateCreated).ToList();
+            List<Post> PostList = _context.Posts.Where(o=>o.UserId == userId && o.IsDraft != 1).OrderByDescending(o=>o.DateCreated).ToList();
             return PostList;
         }
 
@@ -40,6 +40,20 @@ namespace collaby_backend.Controllers
         public ActionResult<Post> GetPost(long postId)
         {
             Post post = _context.Posts.First(o=>o.Id == postId);
+            return post;
+        }
+
+        [HttpGet("drafts")]
+        public ActionResult<IEnumerable<Post>> GetDrafts(long postId)
+        {
+            List<Post> PostList = _context.Posts.Where(o=>o.IsDraft == 1).OrderByDescending(o=>o.Id).ToList();
+            return PostList;
+        }
+
+        [HttpGet("draft/{draftId}")]
+        public ActionResult<Post> GetDraft(long draftId)
+        {
+            Post post = _context.Posts.First(o=>o.Id == draftId);
             return post;
         }
 
@@ -55,7 +69,7 @@ namespace collaby_backend.Controllers
             long week = 6048000000000; //ticks in a week
             //may not need to convert to universal time
             DateTime pastTime =  new DateTime(DateTime.UtcNow.Ticks - week*2);
-            List<Post> PostList = _context.Posts.Where(o=>o.DateCreated > pastTime).OrderByDescending(o=>o.DateCreated).ToList();
+            List<Post> PostList = _context.Posts.Where(o=>o.DateCreated > pastTime && o.IsDraft != 1).OrderByDescending(o=>o.DateCreated).ToList();
             List<Post> Feed = new List<Post>();
             
             long[] userIds = Array.ConvertAll(followingString.Split(";"), long.Parse);

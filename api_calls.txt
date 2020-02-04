@@ -10,6 +10,8 @@ GET: //get all posts in descending order by date created
 GET: user/{userId} //get all posts from specific using their Id
 GET: post/{postId} //get specific post
 GET: feed //get all recent posts from those you follow
+GET: drafts //get all drafts
+GET: draft/{draftId} //grab post matching the post id given
 POST: {Message:string, UserId:int, IsDraft:int (not required)} //submit a post by the currently logged in user. Can give a value to IsDraft
 PUT: {Post}//edits a prexisting post by logged in user
 DELETE: {Post}//deletes a prexisting post from logged in user

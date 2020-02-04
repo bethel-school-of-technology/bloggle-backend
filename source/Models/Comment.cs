@@ -12,7 +12,6 @@ namespace collaby_backend.Models
         public DateTime DateCreated { get; set; }
         public long? IsDraft { get; set; }
         public long? ReportCount { get; set; }
-
         public virtual Post Post { get; set; }
         public virtual User User { get; set; }
     }
