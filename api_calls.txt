@@ -19,7 +19,7 @@ DELETE: {Post}//deletes a prexisting post from logged in user
 Comment Controller Methods: api/comments
 GET: post/{postId} //get all comments for post
 GET comment/{comment id} //get a specific comment
-POST: {Message:string, UserId:int, PostId:int}
+POST: {Message:string, UserId:int, PostId:int, IsDraft:int (not required)}
 PUT: {Comment}
 DELETE: {Comment}
 

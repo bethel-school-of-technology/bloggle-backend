@@ -39,12 +39,36 @@ namespace collaby_backend.Controllers
         [HttpPost]
         public async Task<string> POST(Comment comment){
 
+            if(comment.IsDraft == 1){
+                comment.DateCreated = null;
+            }else{
+                Post post = _context.Posts.First(o=>o.Id == comment.PostId);
+                post.TotalComments += 1;
+                _context.Entry(post).State = EntityState.Modified;
+            }
+
             _context.Comments.Add(comment);
             await _context.SaveChangesAsync();
             return "Comment has been successfully added";
         }
         [HttpPut]
         public async Task<string> Edit(Comment comment){
+
+            Comment currentComment = _context.Comments.First(o=>o.Id == comment.Id);
+            if(currentComment == null)
+                return "Cannot update a post that hasn't been created";
+
+            if(comment.IsDraft == 0){
+
+                //Post currentPost = _context.Posts.First(o=>o.Id == post.Id);
+                //if the draft state changes add 1 to total posts for the user that posted it
+                if (currentComment.IsDraft == 1){
+                    Post post = _context.Posts.First(o=>o.Id == comment.PostId);
+                    post.TotalComments += 1;
+                    _context.Entry(post).State = EntityState.Modified;
+                    comment.DateCreated = DateTime.UtcNow;
+                }
+            }
 
             _context.Entry(comment).State = EntityState.Modified;
             await _context.SaveChangesAsync();
@@ -54,6 +78,11 @@ namespace collaby_backend.Controllers
         [HttpDelete]
         public async Task<string> Delete(Comment comment){
 
+            if(comment.IsDraft != 1){
+                Post post = _context.Posts.First(o=>o.Id == comment.PostId);
+                post.TotalComments -= 1;
+                _context.Entry(post).State = EntityState.Modified;
+            }
             _context.Entry(comment).State = EntityState.Deleted;
             await _context.SaveChangesAsync();
 

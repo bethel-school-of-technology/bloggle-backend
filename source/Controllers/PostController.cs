@@ -118,9 +118,10 @@ namespace collaby_backend.Controllers
                     User user = _context.Users.First(o=>o.Id == post.UserId);
                     user.TotalPosts += 1;
                     _context.Entry(user).State = EntityState.Modified;
+                    post.DateCreated = DateTime.UtcNow;
                 }
                 if(post.DateCreated != null){
-                    post.DateModified = DateTime.Now;
+                    post.DateModified = DateTime.UtcNow;
                 }
             }
             _context.Entry(post).State = EntityState.Modified;
@@ -132,7 +133,7 @@ namespace collaby_backend.Controllers
         [HttpDelete]
         public async Task<string> Delete([FromBody]Post post){
 
-            if(post.IsDraft == 0){
+            if(post.IsDraft != 1){
                 User user = _context.Users.First(o=>o.Id == post.UserId);
                 user.TotalPosts -= 1;
                 _context.Entry(user).State = EntityState.Modified;

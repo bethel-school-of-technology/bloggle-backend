@@ -146,10 +146,10 @@ namespace collaby_backend.Controllers
         [HttpPut]
         public async Task<string> Edit(User user){
 
-            string[] resultArr = new string[4];
+            //string[] resultArr = new string[4];
 
-            resultArr[0]=Verify.ValidateName(new string[]{user.FirstName, user.LastName});
-            resultArr[1]=Verify.ValidateUserName(user.UserName);
+            //resultArr[0]=Verify.ValidateName(new string[]{user.FirstName, user.LastName});
+            //resultArr[1]=Verify.ValidateUserName(user.UserName);
             //resultArr[2]=Verify.ValidatePassword(user.Password);
 
             _context.Entry(user).State = EntityState.Modified;
