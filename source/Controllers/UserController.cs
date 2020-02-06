@@ -112,7 +112,7 @@ namespace collaby_backend.Controllers
 
         [AllowAnonymous]
         [HttpPost]
-        public async Task<string> Create([FromBody]CreateUser user)
+        public async Task<Object> Create([FromBody]CreateUser user)
         {
             string[] resultArr = new string[4];
 
@@ -134,17 +134,17 @@ namespace collaby_backend.Controllers
                 _appUserContext.Add(privateInfo);
                 await _appUserContext.SaveChangesAsync(); //first confirm if email and username are unquie (should be auto handled by database)
             }catch{
-                return "Username or Email has already been used";
+                return Ok(new { response = "Username or Email has already been used"});
             }
 
             User publicInfo = new User{ UserName = user.UserName, FirstName = user.FirstName, LastName = user.LastName, Location = user.Location, Img = user.Img};
             _context.Add(publicInfo);
             await _context.SaveChangesAsync();
-            return "new user created";
+            return Ok(new { response = "new user created"});
         }
 
         [HttpPut]
-        public async Task<string> Edit(User user){
+        public async Task<Object> Edit(User user){
 
             //string[] resultArr = new string[4];
 
@@ -155,7 +155,7 @@ namespace collaby_backend.Controllers
             _context.Entry(user).State = EntityState.Modified;
             await _context.SaveChangesAsync();
 
-            return "User has been successfully updated";
+            return Ok(new { response = "User has been successfully updated"});
         }
 
         //admin only method
@@ -167,20 +167,20 @@ namespace collaby_backend.Controllers
         }*/
 
         [HttpPut("follow/{username}")]
-        public async Task<string> addFollowing(long id, String username){
+        public async Task<Object> addFollowing(long id, String username){
 
             User user = _context.Users.First(obj=>obj.Id == id);
             String followingString = user.Followings;
 
             if(user.UserName==username){
-                return "Yeah... not going to let you follow yourself";
+                return Ok(new { response = "Yeah... not going to let you follow yourself"});
             }
             if(followingString == null){
                 user.Followings += username;
             }else{
                 foreach(String follow in followingString.Split(";")){
                     if(follow == username){
-                        return username+" is already being followed";
+                        return Ok(new { response = username+" is already being followed"});
                     }
                 }
                 user.Followings += ";"+username;
@@ -189,11 +189,11 @@ namespace collaby_backend.Controllers
             _context.Entry(user).State = EntityState.Modified;
             await _context.SaveChangesAsync();
             
-            return "Added "+username+" to your following list";
+            return Ok(new { response = "Added "+username+" to your following list"});
         }
 
         [HttpPut("unfollow/{username}")]
-        public async Task<string> removeFollowing(long id, String username){
+        public async Task<Object> removeFollowing(long id, String username){
 
             User user = _context.Users.First(obj=>obj.Id == id);
             String followingString = user.Followings;
@@ -205,11 +205,11 @@ namespace collaby_backend.Controllers
                     if(follow == username){
                         _context.Entry(user).State = EntityState.Modified;
                         await _context.SaveChangesAsync();
-                        return "Removed "+username+" from your following list";
+                        return Ok(new { response = "Removed "+username+" from your following list"});
                     }
                 }
             }
-            return "Unable to unfollow "+username+" because you're not currently following them";
+            return Ok(new { response = "Unable to unfollow "+username+" because you're not currently following them"});
         }
 
         [HttpDelete("{id}")]

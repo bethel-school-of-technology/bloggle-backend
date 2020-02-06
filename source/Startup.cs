@@ -90,8 +90,6 @@ namespace collaby_backend
             app.UseAuthentication();
             app.UseAuthorization();
 
-
-            //app.UseCors();
             //app.UseMvc();
 
             app.UseEndpoints(endpoints =>

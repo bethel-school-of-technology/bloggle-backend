@@ -99,16 +99,16 @@ namespace collaby_backend.Controllers
             }
             _context.Posts.Add(post);
             await _context.SaveChangesAsync();
-            string respone0="Record has been successfully added";
-            return Ok(new { token = respone0});
+            //return Ok(new { response = "Record has been successfully added"});
+            return Ok(new { response = "Record has been successfully added"});
         }
 
         [HttpPut]
-        public async Task<string> Edit([FromBody]Post post){
+        public async Task<Object> Edit([FromBody]Post post){
 
             Post currentPost = _context.Posts.First(o=>o.Id == post.Id);
             if(currentPost == null)
-                return "Cannot update a post that hasn't been created";
+                return Ok(new { response = "Cannot update a post that hasn't been created"});
 
             if(post.IsDraft == 0){
 
@@ -127,11 +127,11 @@ namespace collaby_backend.Controllers
             _context.Entry(post).State = EntityState.Modified;
             await _context.SaveChangesAsync();
 
-            return "Post has been successfully updated";
+            return Ok(new { response = "Post has been successfully updated"});
         }
 
         [HttpPost("delete")]
-        public async Task<string> Delete([FromBody]Post post){
+        public async Task<Object> Delete([FromBody]Post post){
 
             if(post.IsDraft != 1){
                 User user = _context.Users.First(o=>o.Id == post.UserId);
@@ -142,7 +142,7 @@ namespace collaby_backend.Controllers
             _context.Entry(post).State = EntityState.Deleted;
             await _context.SaveChangesAsync();
 
-            return "Post has been successfully deleted";
+            return Ok(new { response = "Post has been successfully deleted"});
         }
     }
 }

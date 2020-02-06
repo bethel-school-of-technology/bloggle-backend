@@ -44,19 +44,19 @@ namespace collaby_backend.Controllers
         }
 
         [HttpPost]
-        public async Task<string> POST([FromBody]Report post){
+        public async Task<Object> POST([FromBody]Report post){
 
             _context.Reports.Add(post);
             await _context.SaveChangesAsync();
-            return "Report has been successfully added";
+            return Ok(new { response = "Report has been successfully added"});
         }
 
         [HttpDelete]
-        public async Task<string> Delete([FromBody]Report report){
+        public async Task<Object> Delete([FromBody]Report report){
 
             _context.Entry(report).State = EntityState.Deleted;
             await _context.SaveChangesAsync();
-            return "Your report has been deleted";
+            return Ok(new { response = "Your report has been deleted"});
         }
 
     }

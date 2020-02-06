@@ -37,7 +37,7 @@ namespace collaby_backend.Controllers
         }
 
         [HttpPost]
-        public async Task<string> POST(Comment comment){
+        public async Task<Object> POST(Comment comment){
 
             if(comment.IsDraft == 1){
                 comment.DateCreated = null;
@@ -49,14 +49,14 @@ namespace collaby_backend.Controllers
 
             _context.Comments.Add(comment);
             await _context.SaveChangesAsync();
-            return "Comment has been successfully added";
+            return Ok(new { response = "Comment has been successfully added"});
         }
         [HttpPut]
-        public async Task<string> Edit(Comment comment){
+        public async Task<Object> Edit(Comment comment){
 
             Comment currentComment = _context.Comments.First(o=>o.Id == comment.Id);
             if(currentComment == null)
-                return "Cannot update a post that hasn't been created";
+                return Ok(new { response = "Cannot update a post that hasn't been created"});
 
             if(comment.IsDraft == 0){
 
@@ -73,10 +73,10 @@ namespace collaby_backend.Controllers
             _context.Entry(comment).State = EntityState.Modified;
             await _context.SaveChangesAsync();
 
-            return "Comment has been successfully updated";
+            return Ok(new { response = "Comment has been successfully updated"});
         }
         [HttpDelete]
-        public async Task<string> Delete(Comment comment){
+        public async Task<Object> Delete(Comment comment){
 
             if(comment.IsDraft != 1){
                 Post post = _context.Posts.First(o=>o.Id == comment.PostId);
@@ -86,7 +86,7 @@ namespace collaby_backend.Controllers
             _context.Entry(comment).State = EntityState.Deleted;
             await _context.SaveChangesAsync();
 
-            return "Your comment has been deleted";
+            return Ok(new { response = "Your comment has been deleted"});
         }
 
     }
