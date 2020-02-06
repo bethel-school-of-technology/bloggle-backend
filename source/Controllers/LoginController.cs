@@ -34,7 +34,7 @@ namespace collaby_backend.Controllers
             //validation = _userContext.User.FindAsync("");
         }
 
-        [AllowAnonymous]  
+        //[AllowAnonymous]  
         [HttpPost]  
         public IActionResult Login([FromBody]Login login)  
         {

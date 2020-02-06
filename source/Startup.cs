@@ -68,6 +68,7 @@ namespace collaby_backend
                 options.UseSqlite(connectionString));
             services.AddDbContext<ApplicationUserDb>(options =>
                 options.UseSqlite("Data Source=user.db"));
+            services.AddRouting(r => r.SuppressCheckForUnhandledSecurityMetadata = true);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -83,7 +84,13 @@ namespace collaby_backend
                 .AllowAnyOrigin()
                 .AllowAnyMethod()
                 .AllowAnyHeader());
-            
+
+            app.Use((context, next) =>
+                {
+                    context.Items["__CorsMiddlewareInvoked"] = true;
+                    return next();
+                });
+
             app.UseHttpsRedirection();
             app.UseRouting();
 
