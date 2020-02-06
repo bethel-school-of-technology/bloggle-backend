@@ -22,7 +22,7 @@ namespace collaby_backend.Controllers
         }
 
         [HttpGet] //get all posts
-        public ActionResult<IEnumerable<Post>> Get()
+        public ActionResult<IEnumerable<Post>> Post()
         {
             List<Post> PostList = _context.Posts.Where(o=>o.IsDraft != 1).ToList();
             return PostList;
@@ -88,7 +88,7 @@ namespace collaby_backend.Controllers
         }
 
         [HttpPost]
-        public async Task<string> POST([FromBody]Post post){
+        public async Task<Object> POST([FromBody]Post post){
 
             if(post.IsDraft == 1){
                 post.DateCreated = null;
@@ -97,10 +97,10 @@ namespace collaby_backend.Controllers
                 user.TotalPosts += 1;
                 _context.Entry(user).State = EntityState.Modified;
             }
-
             _context.Posts.Add(post);
             await _context.SaveChangesAsync();
-            return "Record has been successfully added";
+            string respone0="Record has been successfully added";
+            return Ok(new { token = respone0});
         }
 
         [HttpPut]
@@ -130,7 +130,7 @@ namespace collaby_backend.Controllers
             return "Post has been successfully updated";
         }
 
-        [HttpDelete]
+        [HttpPost("delete")]
         public async Task<string> Delete([FromBody]Post post){
 
             if(post.IsDraft != 1){
@@ -142,7 +142,7 @@ namespace collaby_backend.Controllers
             _context.Entry(post).State = EntityState.Deleted;
             await _context.SaveChangesAsync();
 
-            return "Post has been successfully updated";
+            return "Post has been successfully deleted";
         }
     }
 }
