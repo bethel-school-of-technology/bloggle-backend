@@ -1,1 +1,4 @@
 /source/bin
+/source/obj
+/source/user.db
+/source/collabyDB.db

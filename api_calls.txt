@@ -2,6 +2,20 @@ Needed headers:
 "Content-Type" : "application/json"
 "Authorization" : "Bearer token_value"
 
+Users Controller methods: api/users
+
+GET: //get a list of all users
+GET: user/{username}
+GET: usernameSearch/{username} //find a user matching that username
+GET: nameSearch/{name}
+GET: followList/{followingString} //get all users within the followingString
+POST: //Create a user
+PUT: //Edit a users info
+PUT: //follow/{username} //add a user to following string
+PUT: unfollow/{username} //unfollow a user you currently follow
+//DELETE: {id} //delete a user by their id
+
+
 Login Controller methods:
 POST: api/Login //returns an access token.
 

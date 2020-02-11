@@ -6,12 +6,14 @@ using Microsoft.AspNetCore.Mvc;
 using collaby_backend.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Authorization;
 
 namespace collaby_backend.Controllers
 {
     [Route("api/posts")]
     [ApiController]
     [EnableCors("AllowOrigin")]
+    [Authorize]
     public class PostController : ControllerBase
     {
         private ApplicationDbContext _context;
@@ -22,6 +24,7 @@ namespace collaby_backend.Controllers
         }
 
         [HttpGet] //get all posts
+        [AllowAnonymous]
         public ActionResult<IEnumerable<Post>> Post()
         {
             List<Post> PostList = _context.Posts.Where(o=>o.IsDraft != 1).ToList();
@@ -29,6 +32,7 @@ namespace collaby_backend.Controllers
         }
 
         [HttpGet("user/{userId}")] //get posts from sepecific user
+        [AllowAnonymous]
         public ActionResult<IEnumerable<Post>> GetUserPosts(long userId)
         {
             List<Post> PostList = _context.Posts.Where(o=>o.UserId == userId && o.IsDraft != 1).OrderByDescending(o=>o.DateCreated).ToList();
@@ -37,6 +41,7 @@ namespace collaby_backend.Controllers
 
         // GET api/posts/single/
         [HttpGet("post/{postId}")] //get specific post
+        [AllowAnonymous]
         public ActionResult<Post> GetPost(long postId)
         {
             Post post = _context.Posts.First(o=>o.Id == postId);

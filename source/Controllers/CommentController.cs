@@ -5,11 +5,13 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using collaby_backend.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace collaby_backend.Controllers
 {
     [Route("api/comments")]
     [ApiController]
+    [Authorize]
     public class CommentController : ControllerBase
     {
         private ApplicationDbContext _context;
@@ -21,6 +23,7 @@ namespace collaby_backend.Controllers
 
         // GET api/comments/{id}
         [HttpGet("{postId}")]
+        [AllowAnonymous]
         public ActionResult<IEnumerable<Comment>> GetAll(long postId)
         {
             List<Comment> CommentList = _context.Comments.Where(o=>o.PostId == postId).OrderByDescending(o=>o.Id).ToList();
@@ -31,6 +34,7 @@ namespace collaby_backend.Controllers
         }
         // GET api/comments/single/{id}
         [HttpGet("single/{commentId}")]
+        [AllowAnonymous]
         public ActionResult<Comment> GetSingle(long commentId){
             Comment comment = _context.Comments.First(o=>o.Id == commentId);
             return comment;

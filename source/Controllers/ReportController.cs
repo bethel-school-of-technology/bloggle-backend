@@ -5,11 +5,13 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using collaby_backend.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace collaby_backend.Controllers
 {
     [Route("api/reports")]
     [ApiController]
+    [Authorize]
     public class ReportController : ControllerBase
     {
         private ApplicationDbContext _context;

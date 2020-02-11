@@ -1,4 +1,6 @@
 using System;
+using System.Globalization;
+using System.Text.RegularExpressions;
 using System.Linq;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -44,11 +46,13 @@ namespace collaby_backend.Controllers
             if (userInfo != null)
             {
                 var tokenString = GenerateJSONWebToken(userInfo);
-                response = Ok(new { token = tokenString });
+                response = Ok(new { token = "Bearer "+tokenString, user = userInfo });
+                return response;
                 //var decodedString = new JwtSecurityTokenHandler().ReadJwtToken(tokenString);
                 //response = Ok(new { decodedString.Payload });
             }
-            return response;
+
+            return Ok(new { token = "" }); //Email or password was typed incorrectly
         }
     
         private string GenerateJSONWebToken(AppUser userInfo)
@@ -59,14 +63,13 @@ namespace collaby_backend.Controllers
                 new Claim(JwtRegisteredClaimNames.Sub, userInfo.UserName),
                 new Claim(JwtRegisteredClaimNames.Email, userInfo.Email),
                 new Claim("IsAdmin", userInfo.IsAdmin.ToString()),
-                new Claim("DateCreated", userInfo.DateCreated.ToString("yyyy-MM-dd")),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 
             var token = new JwtSecurityToken(_config["Jwt:Issuer"],
                 null,
                 claims,
-                expires: DateTime.Now.AddMinutes(120),
+                expires: DateTime.UtcNow.AddMinutes(120),
                 notBefore: DateTime.UtcNow,
                 signingCredentials: credentials);
 
@@ -75,28 +78,33 @@ namespace collaby_backend.Controllers
     
         private AppUser AuthenticateUser(Login login)
         {
-            AppUser user = _appUserContext.AppUsers.First(o => o.Email == login.Email);
+            AppUser user = new AppUser();
+
+            try{
+                user = _appUserContext.AppUsers.First(o => o.Email == login.Email); //validate email/user
+            }catch{
+                return null;
+            }
+
             string timeString = (user.DateCreated.Ticks/10000).ToString();
             string loginHash = Hashing.GenerateSHA256String(login.Password,timeString);
 
-            if(user.Password != loginHash){ 
+            if(user.Password != loginHash){ //validate password
                 return null; 
             }
             return user;
         }
         
         [Authorize]
-        [HttpGet]
+        [HttpGet("auth")]
         public ActionResult<IEnumerable<string>> Get()
         {
             return new string[] { "value1", "value2", "value3", "value4", "value5" };
         }
-
-        [AllowAnonymous]
-        [HttpGet("appSettings")]
-        public ActionResult <string> Getter()
+        public ActionResult<IEnumerable<AppUser>> GetAll()
         {
-            return _config["Jwt:Secret"] +" "+ _config["Jwt:Issuer"];
+            List<AppUser> UserList = _appUserContext.AppUsers.ToList();
+            return UserList;
         }
     }
 }

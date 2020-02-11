@@ -120,9 +120,9 @@ namespace collaby_backend.Controllers
             resultArr[1]=Verify.ValidateName(new string[]{user.FirstName, user.LastName});
             resultArr[2]=Verify.ValidateUserName(user.UserName);
             resultArr[3]=Verify.ValidatePassword(user.Password);
-
+            
             foreach(string result in resultArr){
-                if(result != null){ return result; }
+                if(result != null){ return Ok(new { response = result}); }
             }
 
             DateTime currentTime = DateTime.UtcNow;

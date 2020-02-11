@@ -11,10 +11,10 @@ namespace collaby_backend.Helper{
             //(?=.*[A-Z]) : Should have at least one upper case
             //(?=.*\d) : Should have at least one number
             //(?=.*[#$^+=!*()@%&] ) : Should have at least one special character
-            //.{8,} : Minimum 8 characters
-            Regex rx = new Regex(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#$^+=!*()@%&]).{8,}$");
+            //.{8,20} : Minimum 8 characters and max of 20
+            Regex rx = new Regex(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#$^+=!*()@%&]).{8,20}$");
 
-            return rx.IsMatch(password) ? null: "Invalid Password";
+            return rx.IsMatch(password) ? null: "Invalid Password; you need to include a special character";
         }
         
         public static string ValidateName(string[] fullName)
@@ -57,7 +57,7 @@ namespace collaby_backend.Helper{
         public static string ValidateEmail(string email)
         {
             if (string.IsNullOrWhiteSpace(email))
-                return "Invalid Email";
+                return "Email cannot contain a null value or a space";
 
             try
             {
@@ -78,12 +78,12 @@ namespace collaby_backend.Helper{
                 }
             }
             
-            catch (RegexMatchTimeoutException e)
+            catch (RegexMatchTimeoutException)
             {
                 return "Email verify timeout";
             }
 
-            catch (ArgumentException e)
+            catch (ArgumentException)
             {
                 return "Invalid Email";
             }
