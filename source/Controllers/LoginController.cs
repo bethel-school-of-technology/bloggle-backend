@@ -1,17 +1,11 @@
 using System;
-using System.Globalization;
-using System.Text.RegularExpressions;
 using System.Linq;
 using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Cryptography;
 using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
 using collaby_backend.Models;
 using collaby_backend.Helper;
 using Microsoft.EntityFrameworkCore;
@@ -45,36 +39,15 @@ namespace collaby_backend.Controllers
 
             if (userInfo != null)
             {
-                var tokenString = GenerateJSONWebToken(userInfo);
+                var tokenString = Jwt.GenerateJSONWebToken(userInfo, _config);
                 response = Ok(new { token = "Bearer "+tokenString, user = userInfo });
                 return response;
-                //var decodedString = new JwtSecurityTokenHandler().ReadJwtToken(tokenString);
-                //response = Ok(new { decodedString.Payload });
+                
+                //response = Ok(new { payload = Jwt.decryptJSONWebToken(tokenString) });
             }
 
             return Ok(new { token = "" }); //Email or password was typed incorrectly
         }
-    
-        private string GenerateJSONWebToken(AppUser userInfo)
-        {
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Secret"]));
-            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-            var claims = new[] {
-                new Claim(JwtRegisteredClaimNames.Sub, userInfo.UserName),
-                new Claim(JwtRegisteredClaimNames.Email, userInfo.Email),
-                new Claim("IsAdmin", userInfo.IsAdmin.ToString()),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-            };
-
-            var token = new JwtSecurityToken(_config["Jwt:Issuer"],
-                null,
-                claims,
-                expires: DateTime.UtcNow.AddMinutes(120),
-                notBefore: DateTime.UtcNow,
-                signingCredentials: credentials);
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
-        }  
     
         private AppUser AuthenticateUser(Login login)
         {
@@ -105,6 +78,13 @@ namespace collaby_backend.Controllers
         {
             List<AppUser> UserList = _appUserContext.AppUsers.ToList();
             return UserList;
+        }
+
+        [Authorize]
+        [HttpGet("confirmToken")]
+        public IActionResult CheckToken()
+        {
+            return Ok( new{response = "Token is still valid"});
         }
     }
 }

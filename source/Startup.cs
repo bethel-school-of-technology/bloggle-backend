@@ -13,9 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using collaby_backend.Models;
-using collaby_backend.Secret;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
 using System.Text;
 
 namespace collaby_backend

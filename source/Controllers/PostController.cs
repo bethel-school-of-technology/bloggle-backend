@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace collaby_backend.Controllers
 {
+
     [Route("api/posts")]
     [ApiController]
     [EnableCors("AllowOrigin")]
