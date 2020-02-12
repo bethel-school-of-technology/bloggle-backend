@@ -80,7 +80,7 @@ namespace collaby_backend.Helper{
             
             catch (RegexMatchTimeoutException)
             {
-                return "Email verify timeout";
+                return "Email verifaction timeout";
             }
 
             catch (ArgumentException)
@@ -93,11 +93,11 @@ namespace collaby_backend.Helper{
                 return Regex.IsMatch(email,
                     @"^(?("")("".+?(?<!\\)""@)|(([0-9a-z]((\.(?!\.))|[-!#\$%&'\*\+/=\?\^`\{\}\|~\w])*)(?<=[0-9a-z])@))" +
                     @"(?(\[)(\[(\d{1,3}\.){3}\d{1,3}\])|(([0-9a-z][-0-9a-z]*[0-9a-z]*\.)+[a-z0-9][\-a-z0-9]{0,22}[a-z0-9]))$",
-                    RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(250)) ? null : "93 Invalid Email";
+                    RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(250)) ? null : "Invalid Email";
             }
             catch (RegexMatchTimeoutException)
             {
-                return "Email verify timeout";
+                return "Email verifaction timeout";
             }
         }
     }

@@ -13,6 +13,7 @@ namespace collaby_backend.Helper{
             byte[] hash = sha256.ComputeHash(bytes);
             return GetStringFromHash(hash);
         }
+
         private static string GetStringFromHash(byte[] hash)
         {
             StringBuilder result = new StringBuilder();
@@ -22,6 +23,5 @@ namespace collaby_backend.Helper{
             }
             return result.ToString();
         }
-
     }
 }

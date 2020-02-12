@@ -4,12 +4,15 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using collaby_backend.Models;
+using collaby_backend.Helper;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace collaby_backend.Controllers
 {
     [Route("api/ratings")]
     [ApiController]
+    [Authorize]
     public class RatingController : ControllerBase
     {
         private ApplicationDbContext _context;
@@ -19,38 +22,69 @@ namespace collaby_backend.Controllers
             _context = context;
         }
 
-        // GET api/posts
-        [HttpGet]
-        public ActionResult<Rating> Get(Rating userRating)
+        private int GetUserId(){
+
+            string token = Request.Headers["Authorization"];
+            int userId = Int16.Parse(Jwt.decryptJSONWebToken(token)["Id"].ToString());
+
+            return userId;
+        }
+        private bool isAdmin(){
+
+            string token = Request.Headers["Authorization"];
+            string adminId = Jwt.decryptJSONWebToken(token)["IsAdmin"].ToString();
+            if(adminId == "1"){
+                return true;
+            }
+
+            return false;
+        }
+
+        // GET api/ratings/all/{postId}
+        [AllowAnonymous]
+        [HttpGet("all/{postId}")]
+        public ActionResult <IEnumerable<Rating>> GetAll(long postId)
         {
-            Rating rating = _context.Ratings.First(o=>o.PostId == userRating.PostId && o.UserId == userRating.UserId);
+            Post post = _context.Posts.First(o=>o.Id == postId);
+            List<Rating> ratings = _context.Ratings.Where(o=>o.PostId == postId).ToList();
+            return ratings;
+        }
+
+        [HttpGet("rating/{postId}")]
+        public ActionResult<Rating> Get(long postId)
+        {
+            Post post = _context.Posts.First(o=>o.Id == postId);
+            Rating rating = _context.Ratings.First(o=>o.UserId == GetUserId());
+            
+            if(rating == null){
+                return null;
+            }
+
             return rating;
         }
 
-        [HttpPost]
+        [HttpPost]//post and put method
         public async Task<Object> POST([FromBody]Rating rating){
 
-            _context.Ratings.Add(rating);
             Post post =_context.Posts.First(o=>o.Id == rating.PostId);
+            rating.UserId = GetUserId();
+
+            if(_context.Ratings.First(o=>o.UserId == rating.UserId) != null){
+                //if rating for the post already exisits, edit it's current value
+                post.RatingValue += rating.Value - _context.Ratings.First(o=>o.Id == rating.Id).Value;
+                _context.Entry(post).State = EntityState.Modified;
+                _context.Entry(rating).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
+
+                return Ok(new { response = "Rating has been successfully updated"});
+            }
+
             post.RatingCount += 1;
             post.RatingValue += rating.Value;
+            _context.Ratings.Add(rating);
             _context.Entry(post).State = EntityState.Modified;
             await _context.SaveChangesAsync();
             return Ok(new { response = "Rating has been successfully added"});
         }
-        
-        [HttpPut]
-        public async Task<Object> Edit([FromBody]Rating rating){
-
-            Post post =_context.Posts.First(o=>o.Id == rating.PostId);
-            post.RatingValue += rating.Value - _context.Ratings.First(o=>o.Id == rating.Id).Value;
-
-            _context.Entry(post).State = EntityState.Modified;
-            _context.Entry(rating).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
-
-            return Ok(new { response = "Rating has been successfully updated"});
-        }
-
     }
 }

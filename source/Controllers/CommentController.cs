@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using collaby_backend.Models;
+using collaby_backend.Helper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 
@@ -21,6 +22,14 @@ namespace collaby_backend.Controllers
             _context = context;
         }
 
+        private int GetUserId(){
+
+            string token = Request.Headers["Authorization"];
+            int userId = Int16.Parse(Jwt.decryptJSONWebToken(token)["Id"].ToString());
+
+            return userId;
+        }
+
         // GET api/comments/{id}
         [HttpGet("{postId}")]
         [AllowAnonymous]
@@ -36,6 +45,7 @@ namespace collaby_backend.Controllers
         [HttpGet("single/{commentId}")]
         [AllowAnonymous]
         public ActionResult<Comment> GetSingle(long commentId){
+
             Comment comment = _context.Comments.First(o=>o.Id == commentId);
             return comment;
         }
@@ -43,10 +53,15 @@ namespace collaby_backend.Controllers
         [HttpPost]
         public async Task<Object> POST(Comment comment){
 
+            Post post = _context.Posts.First(o=>o.Id == comment.PostId);
+            if(post.UserId != GetUserId()){
+                return StatusCode(401);
+            }
+            comment.UserId = post.UserId;
+
             if(comment.IsDraft == 1){
                 comment.DateCreated = null;
             }else{
-                Post post = _context.Posts.First(o=>o.Id == comment.PostId);
                 post.TotalComments += 1;
                 _context.Entry(post).State = EntityState.Modified;
             }
@@ -55,12 +70,18 @@ namespace collaby_backend.Controllers
             await _context.SaveChangesAsync();
             return Ok(new { response = "Comment has been successfully added"});
         }
+
         [HttpPut]
         public async Task<Object> Edit(Comment comment){
 
             Comment currentComment = _context.Comments.First(o=>o.Id == comment.Id);
+
+            if(currentComment.UserId != GetUserId()){
+                return StatusCode(401);
+            }
+
             if(currentComment == null)
-                return Ok(new { response = "Cannot update a post that hasn't been created"});
+                return Ok(new { response = "Cannot update a comment that hasn't been created"});
 
             if(comment.IsDraft == 0){
 

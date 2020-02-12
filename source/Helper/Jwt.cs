@@ -18,6 +18,7 @@ namespace collaby_backend.Helper{
             var claims = new[] {
                 new Claim(JwtRegisteredClaimNames.Sub, userInfo.UserName),
                 new Claim(JwtRegisteredClaimNames.Email, userInfo.Email),
+                new Claim("Id", userInfo.Id.ToString()),
                 new Claim("IsAdmin", userInfo.IsAdmin.ToString()),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
@@ -34,7 +35,7 @@ namespace collaby_backend.Helper{
 
         public static JwtPayload decryptJSONWebToken(string tokenString){
             var token = tokenString.Split(" ")[1]; //remove 'Bearer ' from string
-            var decodedString = new JwtSecurityTokenHandler().ReadJwtToken(tokenString);
+            var decodedString = new JwtSecurityTokenHandler().ReadJwtToken(token);
             return decodedString.Payload;
         }
     }

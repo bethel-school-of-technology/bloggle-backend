@@ -27,26 +27,28 @@ namespace collaby_backend.Controllers
             _config = config;
             _userContext = userContext;
             _appUserContext = appUserContext;
-            //validation = _userContext.User.FindAsync("");
         }
 
-        //[AllowAnonymous]  
         [HttpPost]  
         public IActionResult Login([FromBody]Login login)  
         {
             IActionResult response = Unauthorized();
             var userInfo = AuthenticateUser(login);
 
+            if(userInfo.IsBand == 1){
+                Ok(new { response = "You have been band and cannot loggin" });
+            }
+
             if (userInfo != null)
             {
                 var tokenString = Jwt.GenerateJSONWebToken(userInfo, _config);
-                response = Ok(new { token = "Bearer "+tokenString, user = userInfo });
+                response = Ok(new { token = "Bearer "+tokenString, response = "" });
                 return response;
                 
                 //response = Ok(new { payload = Jwt.decryptJSONWebToken(tokenString) });
             }
 
-            return Ok(new { token = "" }); //Email or password was typed incorrectly
+            return Ok(new { response = "Email or password was typed incorrectly" }); //Email or password was typed incorrectly
         }
     
         private AppUser AuthenticateUser(Login login)
@@ -65,19 +67,8 @@ namespace collaby_backend.Controllers
             if(user.Password != loginHash){ //validate password
                 return null; 
             }
+
             return user;
-        }
-        
-        [Authorize]
-        [HttpGet("auth")]
-        public ActionResult<IEnumerable<string>> Get()
-        {
-            return new string[] { "value1", "value2", "value3", "value4", "value5" };
-        }
-        public ActionResult<IEnumerable<AppUser>> GetAll()
-        {
-            List<AppUser> UserList = _appUserContext.AppUsers.ToList();
-            return UserList;
         }
 
         [Authorize]

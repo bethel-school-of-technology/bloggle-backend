@@ -3,19 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Primitives;
 using collaby_backend.Models;
 using collaby_backend.Helper;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 
 namespace collaby_backend.Controllers
 {
     [Route("api/users")]
     [ApiController]
-    //[Authorize]
+    [Authorize]
     public class UserController : ControllerBase
     {
         private ApplicationDbContext _context;
@@ -27,6 +26,25 @@ namespace collaby_backend.Controllers
             _appUserContext = appUserContext;
         }
 
+        private int GetUserId(){
+
+            string token = Request.Headers["Authorization"];
+            int userId = Int16.Parse(Jwt.decryptJSONWebToken(token)["Id"].ToString());
+
+            return userId;
+        }
+        private bool isAdmin(){
+
+            string token = Request.Headers["Authorization"];
+            string adminId = Jwt.decryptJSONWebToken(token)["IsAdmin"].ToString();
+            if(adminId == "1"){
+                return true;
+            }
+
+            return false;
+        }
+
+
         // GET api/users
         [HttpGet]
         [AllowAnonymous]
@@ -36,8 +54,7 @@ namespace collaby_backend.Controllers
             return UserList;
         }
 
-        [HttpGet("user/{username}")] //profile page
-        //[ValidateAntiForgeryToken]
+        [HttpGet("profile/{username}")] //profile page
         [AllowAnonymous]
         public ActionResult<User> Get(String username)
         {
@@ -88,12 +105,11 @@ namespace collaby_backend.Controllers
             return UserList;
         }
 
-        [HttpGet("followList/{followingString}")]
-        public ActionResult<IEnumerable<User>> FollowingList([FromBody]String followingString,[FromHeader(Name = "token")]String jwt){
+        [HttpGet("followList")]
+        public ActionResult<IEnumerable<User>> FollowingList(){
 
             List<User> followedUsers = new List<User>();
-            var decodedJwt = new JwtSecurityTokenHandler().ReadJwtToken(jwt);
-            var payload = decodedJwt.Payload;
+            string followingString = _context.Users.First(o=>o.Id == GetUserId()).Followings;
             
             if(followingString == null){
                 //no results found
@@ -158,21 +174,13 @@ namespace collaby_backend.Controllers
             return Ok(new { response = "User has been successfully updated"});
         }
 
-        //admin only method
-        /*private async Task BandUser(User user){
-
-            user.IsBand = 1;
-            _context.Entry(user).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
-        }*/
-
         [HttpPut("follow/{username}")]
-        public async Task<Object> addFollowing(long id, String username){
+        public async Task<Object> addFollowing(String username){
 
-            User user = _context.Users.First(obj=>obj.Id == id);
+            User user = _context.Users.First(obj=>obj.Id == GetUserId());
             String followingString = user.Followings;
 
-            if(user.UserName==username){
+            if(user.UserName == username){
                 return Ok(new { response = "Yeah... not going to let you follow yourself"});
             }
             if(followingString == null){
@@ -193,16 +201,29 @@ namespace collaby_backend.Controllers
         }
 
         [HttpPut("unfollow/{username}")]
-        public async Task<Object> removeFollowing(long id, String username){
+        public async Task<Object> removeFollowing(String username){
 
-            User user = _context.Users.First(obj=>obj.Id == id);
+            User user = _context.Users.First(obj=>obj.Id == GetUserId());
             String followingString = user.Followings;
 
             if(user.Followings != null){
-
-                foreach(String follow in followingString.Split(";")){
+                List<String> FollowList = followingString.Split(";").ToList();
+                foreach(String follow in FollowList){
 
                     if(follow == username){
+
+                        FollowList.Remove(follow);
+                        String newFollowString=null;
+
+                        foreach(String following in FollowList){
+                            if(newFollowString == null){
+                                newFollowString=following;
+                            }else{
+                                newFollowString+=";"+following;
+                            }
+                        }
+                        user.Followings = newFollowString;
+
                         _context.Entry(user).State = EntityState.Modified;
                         await _context.SaveChangesAsync();
                         return Ok(new { response = "Removed "+username+" from your following list"});
@@ -212,25 +233,30 @@ namespace collaby_backend.Controllers
             return Ok(new { response = "Unable to unfollow "+username+" because you're not currently following them"});
         }
 
+        //meant for testing
         [HttpDelete("{id}")]
-        public async Task<ActionResult<User>> Delete(long id){
+        public async Task<Object> Delete(long id){
 
             var user = await _context.Users.FindAsync(id);
+            var appUser = await _appUserContext.AppUsers.FindAsync(id);
 
             if (user == null)
             {
                 return NotFound();
             }
-            _context.Users.Remove(user);
-            await _context.SaveChangesAsync();
+            if(isAdmin() == true){
+                _appUserContext.AppUsers.Remove(appUser);
+                _context.Users.Remove(user);
+                await _context.SaveChangesAsync();
+            }
 
-            return user;
+            return Ok(new { response = "User with the username of "+user.UserName+" and Id of "+user.Id.ToString()+" has been deleted"});
         }
+
         [HttpPost("Test")]
-        public String[] Test(){
-            String testString = "adsf";
-            String[] testArray = testString.Split(";");
-            return testArray;
+        public int Test(){
+            
+            return GetUserId();
         }
     }
 }
