@@ -11,10 +11,9 @@ GET: nameSearch/{name}
 GET: followList //get all users being followed
 POST: //Create a user
 PUT: //Edit a users info
-PUT: //follow/{username} //add a user to following string
+PUT: follow/{username} //add a user to following string
 PUT: unfollow/{username} //unfollow a user you currently follow
 POST: delete/{id} //delete a user by their id (need to be an admin)
-
 
 Login Controller methods:
 POST: api/Login //returns an access token.
@@ -47,5 +46,5 @@ Report Controller Methods: api/reports
 GET: //grab all submitted reports. They are in descending order(admin only)
 GET: report/{reportId} //grab a specific report(admin only)
 GET: post/{postId} //grab all reports about a post (admin only)
-POST: {PostId:int, UserId:int}//allows a user to post a report
+POST: {PostId:int}//allows a user to post a report
 DELETE: {Report obj}(admin only)

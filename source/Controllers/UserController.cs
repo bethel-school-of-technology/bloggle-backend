@@ -54,9 +54,17 @@ namespace collaby_backend.Controllers
             return UserList;
         }
 
+        [HttpGet("profile")] //profile page
+        [AllowAnonymous]
+        public ActionResult<User> GetProfile()
+        {
+            User user = _context.Users.First(obj=>obj.Id == GetUserId());
+            return user;
+        }
+
         [HttpGet("profile/{username}")] //profile page
         [AllowAnonymous]
-        public ActionResult<User> Get(String username)
+        public ActionResult<User> GetUserProfile(String username)
         {
             User user = _context.Users.First(obj=>obj.UserName == username);
             return user;
