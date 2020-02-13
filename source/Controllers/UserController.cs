@@ -55,7 +55,6 @@ namespace collaby_backend.Controllers
         }
 
         [HttpGet("profile")] //profile page
-        [AllowAnonymous]
         public ActionResult<User> GetProfile()
         {
             User user = _context.Users.First(obj=>obj.Id == GetUserId());

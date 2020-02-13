@@ -36,10 +36,10 @@ namespace collaby_backend.Controllers
             var userInfo = AuthenticateUser(login);
 
             if(userInfo.IsBand == 1){
-                Ok(new { response = "You have been band and cannot loggin" });
+                return Ok(new { token = "", response = "You have been band and cannot loggin" });
             }
 
-            if (userInfo != null)
+            if (userInfo.Password != null)
             {
                 var tokenString = Jwt.GenerateJSONWebToken(userInfo, _config);
                 response = Ok(new { token = "Bearer "+tokenString, response = "" });
@@ -48,7 +48,7 @@ namespace collaby_backend.Controllers
                 //response = Ok(new { payload = Jwt.decryptJSONWebToken(tokenString) });
             }
 
-            return Ok(new { response = "Email or password was typed incorrectly" }); //Email or password was typed incorrectly
+            return Ok(new { token = "", response = "Email or password was typed incorrectly" }); //Email or password was typed incorrectly
         }
     
         private AppUser AuthenticateUser(Login login)
@@ -58,14 +58,15 @@ namespace collaby_backend.Controllers
             try{
                 user = _appUserContext.AppUsers.First(o => o.Email == login.Email); //validate email/user
             }catch{
-                return null;
+                user.Password=null;
+                return user;
             }
 
             string timeString = (user.DateCreated.Ticks/10000).ToString();
             string loginHash = Hashing.GenerateSHA256String(login.Password,timeString);
 
             if(user.Password != loginHash){ //validate password
-                return null; 
+                user.Password=null;
             }
 
             return user;

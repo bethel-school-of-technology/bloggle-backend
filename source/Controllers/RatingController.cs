@@ -45,16 +45,28 @@ namespace collaby_backend.Controllers
         [HttpGet("all/{postId}")]
         public ActionResult <IEnumerable<Rating>> GetAll(long postId)
         {
-            Post post = _context.Posts.First(o=>o.Id == postId);
-            List<Rating> ratings = _context.Ratings.Where(o=>o.PostId == postId).ToList();
+            List<Rating> ratings = new List<Rating>();
+
+            try{
+                Post post = _context.Posts.First(o=>o.Id == postId);
+                ratings = _context.Ratings.Where(o=>o.PostId == postId).ToList();
+            }catch{
+                return null;
+            }
             return ratings;
         }
 
         [HttpGet("rating/{postId}")]
         public ActionResult<Rating> Get(long postId)
         {
-            Post post = _context.Posts.First(o=>o.Id == postId);
-            Rating rating = _context.Ratings.First(o=>o.UserId == GetUserId());
+            Rating rating;
+            
+            try{
+                Post post = _context.Posts.First(o=>o.Id == postId);
+                rating = _context.Ratings.First(o=>o.UserId == GetUserId());
+            }catch{
+                return null;
+            }
             
             if(rating == null){
                 return null;
