@@ -74,7 +74,8 @@ namespace collaby_backend
         {
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
+                //app.UseDeveloperExceptionPage();
+                app.UseExceptionHandler("/error");
             }
 
             //use to test with postman

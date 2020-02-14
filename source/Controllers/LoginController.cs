@@ -72,11 +72,20 @@ namespace collaby_backend.Controllers
             return user;
         }
 
-        [Authorize]
+        //[Authorize]
         [HttpGet("confirmToken")]
         public IActionResult CheckToken()
         {
-            return Ok( new{response = "Token is still valid"});
+            string token = Request.Headers["Authorization"];
+            try{
+                if(DateTime.UtcNow < Jwt.GetValidationDate(token))
+                    return Ok( new{response = true});
+                else{
+                    return Ok( new{response = false});//expired session id
+                }
+            }catch{}
+
+            return Ok( new{response = false});//incorrect for a session Id
         }
     }
 }

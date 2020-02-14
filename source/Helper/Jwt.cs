@@ -38,5 +38,10 @@ namespace collaby_backend.Helper{
             var decodedString = new JwtSecurityTokenHandler().ReadJwtToken(token);
             return decodedString.Payload;
         }
+        public static DateTime GetValidationDate(string tokenString){
+            var token = tokenString.Split(" ")[1]; //remove 'Bearer ' from string
+            var decodedString = new JwtSecurityTokenHandler().ReadJwtToken(token);
+            return decodedString.ValidTo;
+        }
     }
 }
