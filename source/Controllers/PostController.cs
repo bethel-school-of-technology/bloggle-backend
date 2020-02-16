@@ -35,10 +35,18 @@ namespace collaby_backend.Controllers
         }
 
         [HttpGet] //get all posts
-        [AllowAnonymous]
         public ActionResult<IEnumerable<Post>> Post()
         {
-            List<Post> PostList = _context.Posts.Where(o => o.IsDraft != 1 && GetUserId() == o.UserId).ToList();
+            List<Post> PostList = new List<Post>();
+
+            try
+            {
+                PostList = _context.Posts.Where(o => o.IsDraft != 1 && GetUserId() == o.UserId).ToList();
+            }
+            catch
+            {
+                return null;
+            }
             return PostList;
         }
 
@@ -46,8 +54,17 @@ namespace collaby_backend.Controllers
         [AllowAnonymous]
         public ActionResult<IEnumerable<Post>> GetUserPosts(string username)
         {
+            List<Post> PostList = new List<Post>();
+
             long userId = _context.Users.First(o => o.UserName == username).Id;
-            List<Post> PostList = _context.Posts.Where(o => o.UserId == userId && o.IsDraft != 1).OrderByDescending(o => o.DateCreated).ToList();
+            try
+            {
+                PostList = _context.Posts.Where(o => o.UserId == userId && o.IsDraft != 1).OrderByDescending(o => o.DateCreated).ToList();
+            }
+            catch
+            {
+                return null;
+            }
             return PostList;
         }
 
@@ -63,7 +80,15 @@ namespace collaby_backend.Controllers
         [HttpGet("drafts")]
         public ActionResult<IEnumerable<Post>> GetDrafts(long postId)
         {
-            List<Post> PostList = _context.Posts.Where(o => o.IsDraft == 1 && o.UserId == GetUserId()).OrderByDescending(o => o.Id).ToList();
+            List<Post> PostList = new List<Post>();
+            try
+            {
+                PostList = _context.Posts.Where(o => o.IsDraft == 1 && o.UserId == GetUserId()).OrderByDescending(o => o.Id).ToList();
+            }
+            catch
+            {
+                return null;
+            }
             return PostList;
         }
 
@@ -103,19 +128,6 @@ namespace collaby_backend.Controllers
             {
                 userIds.Add(_context.Users.First(o => o.UserName == username).Id);
             }
-            /*long[] userIds = Array.ConvertAll(followingString.Split(";"), long.Parse);
-            foreach(Post post in PostList){
-                foreach(long id in userIds){
-                    if(post.UserId == id){
-                        Feed.Add(post);
-                        break;
-                    }
-                }
-                if(Feed.Count<=20){
-                    break;
-                }
-            }*/
-
             foreach (Post post in PostList)
             {
                 foreach (long id in userIds)
@@ -131,8 +143,20 @@ namespace collaby_backend.Controllers
                     break;
                 }
             }
-
             return Feed;
+            /*long[] userIds = Array.ConvertAll(followingString.Split(";"), long.Parse);
+            foreach(Post post in PostList){
+                foreach(long id in userIds){
+                    if(post.UserId == id){
+                        Feed.Add(post);
+                        break;
+                    }
+                }
+                if (Feed.Count <= 20)
+                {
+                    break;
+                }
+            }*/
         }
 
         [HttpPost]
