@@ -45,9 +45,7 @@ namespace collaby_backend.Controllers
         public ActionResult<IEnumerable<Post>> Post()
         {
             List<Post> PostList = new List<Post>();
-
             PostList = _context.Posts.Where(o=>o.IsDraft != 1 && GetUserId() == o.UserId).ToList();
-
             return PostList;
         }
 
@@ -188,9 +186,7 @@ namespace collaby_backend.Controllers
         [HttpPost]
         public async Task<Object> POST([FromBody]Post post)
         {
-
             long userId = GetUserId();
-
 
             if(post.IsDraft == 1){
                 post.DateCreated = null;
@@ -200,6 +196,7 @@ namespace collaby_backend.Controllers
                 User user = _context.Users.First(o => o.Id == userId);
                 user.TotalPosts += 1;
                 _context.Entry(user).State = EntityState.Modified;
+                return(new { response = "Record has been successfully added" });
             }
             post.Title += "by @" + GetUserName();
             post.UserId = userId;
@@ -254,7 +251,9 @@ namespace collaby_backend.Controllers
         [HttpPost("delete")]
         public async Task<Object> Delete([FromBody]Post post)
         {
-
+            if(GetUserId() != post.UserId){
+                StatusCode(401);
+            }
             if (post.IsDraft != 1)
             {
                 User user = _context.Users.First(o => o.Id == post.UserId);
