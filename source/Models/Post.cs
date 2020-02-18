@@ -23,7 +23,6 @@ namespace collaby_backend.Models
         public int RatingCount { get; set; }
         public int IsDraft { get; set; }
         public int TotalComments { get; set; }
-        
         [JsonIgnore]
         public virtual User User { get; set; }
         [JsonIgnore]

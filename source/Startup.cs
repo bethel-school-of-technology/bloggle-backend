@@ -60,12 +60,12 @@ namespace collaby_backend
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
 
-            var connectionString = "Data Source=collabyDB.db";
+            var connectionString = "Data Source=collabyDB.db;foreign keys=true";
 
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlite(connectionString));
             services.AddDbContext<ApplicationUserDb>(options =>
-                options.UseSqlite("Data Source=user.db"));
+                options.UseSqlite("Data Source=user.db;foreign keys=true"));
             services.AddRouting(r => r.SuppressCheckForUnhandledSecurityMetadata = true);
         }
 

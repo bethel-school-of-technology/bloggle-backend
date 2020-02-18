@@ -45,13 +45,11 @@ namespace collaby_backend.Models
 
                 entity.HasOne(d => d.Post)
                     .WithMany(p => p.Comments)
-                    .HasForeignKey(d => d.PostId)
-                    .OnDelete(DeleteBehavior.ClientSetNull);
+                    .HasForeignKey(d => d.PostId);
 
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.Comments)
-                    .HasForeignKey(d => d.UserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull);
+                    .HasForeignKey(d => d.UserId);
             });
 
             modelBuilder.Entity<Post>(entity =>
@@ -76,8 +74,7 @@ namespace collaby_backend.Models
 
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.Posts)
-                    .HasForeignKey(d => d.UserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull);
+                    .HasForeignKey(d => d.UserId);
             });
 
             modelBuilder.Entity<Rating>(entity =>
@@ -91,13 +88,11 @@ namespace collaby_backend.Models
 
                 entity.HasOne(d => d.Post)
                     .WithMany(p => p.Ratings)
-                    .HasForeignKey(d => d.PostId)
-                    .OnDelete(DeleteBehavior.ClientSetNull);
+                    .HasForeignKey(d => d.PostId);
 
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.Ratings)
-                    .HasForeignKey(d => d.UserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull);
+                    .HasForeignKey(d => d.UserId);
             });
 
             modelBuilder.Entity<Report>(entity =>
@@ -114,13 +109,11 @@ namespace collaby_backend.Models
 
                 entity.HasOne(d => d.Post)
                     .WithMany(p => p.Reports)
-                    .HasForeignKey(d => d.PostId)
-                    .OnDelete(DeleteBehavior.ClientSetNull);
+                    .HasForeignKey(d => d.PostId);
 
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.Reports)
-                    .HasForeignKey(d => d.UserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull);
+                    .HasForeignKey(d => d.UserId);
             });
 
             modelBuilder.Entity<User>(entity =>

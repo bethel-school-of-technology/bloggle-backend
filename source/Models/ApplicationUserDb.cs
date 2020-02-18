@@ -21,7 +21,7 @@ namespace collaby_backend.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlite("Data Source=C:/repos/collaby-backend/source/user.db");
+                optionsBuilder.UseSqlite("Data Source=C:/repos/collaby-backend/source/user.db;foreign keys=true");
             }
         }
 

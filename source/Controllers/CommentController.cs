@@ -61,9 +61,7 @@ namespace collaby_backend.Controllers
         public async Task<Object> POST(Comment comment){
 
             Post post = _context.Posts.First(o=>o.Id == comment.PostId);
-            if(post.UserId != GetUserId()){
-                return StatusCode(401);
-            }
+
             comment.UserId = post.UserId;
 
             if(comment.IsDraft == 1){
