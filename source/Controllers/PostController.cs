@@ -46,19 +46,8 @@ namespace collaby_backend.Controllers
         {
             List<Post> PostList = new List<Post>();
 
-<<<<<<< HEAD
             PostList = _context.Posts.Where(o=>o.IsDraft != 1 && GetUserId() == o.UserId).ToList();
 
-=======
-            try
-            {
-                PostList = _context.Posts.Where(o => o.IsDraft != 1 && GetUserId() == o.UserId).ToList();
-            }
-            catch
-            {
-                return null;
-            }
->>>>>>> a909adb784a5a5c1894ad317f5abc020dad52cfd
             return PostList;
         }
 
@@ -68,21 +57,9 @@ namespace collaby_backend.Controllers
         {
             List<Post> PostList = new List<Post>();
 
-<<<<<<< HEAD
             long userId = _context.Users.First(o=>o.UserName == username).Id;
             PostList = _context.Posts.Where(o=>o.UserId == userId && o.IsDraft != 1).OrderByDescending(o=>o.DateCreated).ToList();
 
-=======
-            long userId = _context.Users.First(o => o.UserName == username).Id;
-            try
-            {
-                PostList = _context.Posts.Where(o => o.UserId == userId && o.IsDraft != 1).OrderByDescending(o => o.DateCreated).ToList();
-            }
-            catch
-            {
-                return null;
-            }
->>>>>>> a909adb784a5a5c1894ad317f5abc020dad52cfd
             return PostList;
         }
 
@@ -99,20 +76,9 @@ namespace collaby_backend.Controllers
         public ActionResult<IEnumerable<Post>> GetDrafts(long postId)
         {
             List<Post> PostList = new List<Post>();
-<<<<<<< HEAD
 
             PostList = _context.Posts.Where(o=>o.IsDraft == 1 && o.UserId == GetUserId()).OrderByDescending(o=>o.Id).ToList();
 
-=======
-            try
-            {
-                PostList = _context.Posts.Where(o => o.IsDraft == 1 && o.UserId == GetUserId()).OrderByDescending(o => o.Id).ToList();
-            }
-            catch
-            {
-                return null;
-            }
->>>>>>> a909adb784a5a5c1894ad317f5abc020dad52cfd
             return PostList;
         }
 
@@ -133,7 +99,6 @@ namespace collaby_backend.Controllers
             List<Post> ratedPosts = new List<Post>();
             List<Post> posts = new List<Post>();
 
-<<<<<<< HEAD
             posts = _context.Posts.Where(o=>o.RatingCount != 0).OrderByDescending(o=>o.RatingCount).ToList();
             
             if(ratedPosts.Count == 0){
@@ -165,9 +130,6 @@ namespace collaby_backend.Controllers
             return posts;//userPosts;//first 20 if there is no rating
         }
         
-=======
-
->>>>>>> a909adb784a5a5c1894ad317f5abc020dad52cfd
         [HttpGet("feed")]
         public ActionResult<IEnumerable<Post>> Get()
         {
@@ -229,13 +191,8 @@ namespace collaby_backend.Controllers
 
             long userId = GetUserId();
 
-<<<<<<< HEAD
 
             if(post.IsDraft == 1){
-=======
-            if (post.IsDraft == 1)
-            {
->>>>>>> a909adb784a5a5c1894ad317f5abc020dad52cfd
                 post.DateCreated = null;
             }
             else
