@@ -25,7 +25,8 @@ namespace collaby_backend.Controllers
             _context = context;
         }
 
-        private int GetUserId(){
+        private int GetUserId()
+        {
 
             string token = Request.Headers["Authorization"];
             int userId = Int16.Parse(Jwt.decryptJSONWebToken(token)["Id"].ToString());
@@ -45,8 +46,19 @@ namespace collaby_backend.Controllers
         {
             List<Post> PostList = new List<Post>();
 
+<<<<<<< HEAD
             PostList = _context.Posts.Where(o=>o.IsDraft != 1 && GetUserId() == o.UserId).ToList();
 
+=======
+            try
+            {
+                PostList = _context.Posts.Where(o => o.IsDraft != 1 && GetUserId() == o.UserId).ToList();
+            }
+            catch
+            {
+                return null;
+            }
+>>>>>>> a909adb784a5a5c1894ad317f5abc020dad52cfd
             return PostList;
         }
 
@@ -56,9 +68,21 @@ namespace collaby_backend.Controllers
         {
             List<Post> PostList = new List<Post>();
 
+<<<<<<< HEAD
             long userId = _context.Users.First(o=>o.UserName == username).Id;
             PostList = _context.Posts.Where(o=>o.UserId == userId && o.IsDraft != 1).OrderByDescending(o=>o.DateCreated).ToList();
 
+=======
+            long userId = _context.Users.First(o => o.UserName == username).Id;
+            try
+            {
+                PostList = _context.Posts.Where(o => o.UserId == userId && o.IsDraft != 1).OrderByDescending(o => o.DateCreated).ToList();
+            }
+            catch
+            {
+                return null;
+            }
+>>>>>>> a909adb784a5a5c1894ad317f5abc020dad52cfd
             return PostList;
         }
 
@@ -67,7 +91,7 @@ namespace collaby_backend.Controllers
         [AllowAnonymous]
         public ActionResult<Post> GetPost(long postId)
         {
-            Post post = _context.Posts.First(o=>o.Id == postId);
+            Post post = _context.Posts.First(o => o.Id == postId);
             return post;
         }
 
@@ -75,17 +99,29 @@ namespace collaby_backend.Controllers
         public ActionResult<IEnumerable<Post>> GetDrafts(long postId)
         {
             List<Post> PostList = new List<Post>();
+<<<<<<< HEAD
 
             PostList = _context.Posts.Where(o=>o.IsDraft == 1 && o.UserId == GetUserId()).OrderByDescending(o=>o.Id).ToList();
 
+=======
+            try
+            {
+                PostList = _context.Posts.Where(o => o.IsDraft == 1 && o.UserId == GetUserId()).OrderByDescending(o => o.Id).ToList();
+            }
+            catch
+            {
+                return null;
+            }
+>>>>>>> a909adb784a5a5c1894ad317f5abc020dad52cfd
             return PostList;
         }
 
         [HttpGet("draft/{draftId}")]
         public ActionResult<Post> GetDraft(long draftId)
         {
-            Post post = _context.Posts.First(o=>o.Id == draftId);
-            if(GetUserId() != post.UserId){
+            Post post = _context.Posts.First(o => o.Id == draftId);
+            if (GetUserId() != post.UserId)
+            {
                 return StatusCode(401);
             }
             return post;
@@ -97,6 +133,7 @@ namespace collaby_backend.Controllers
             List<Post> ratedPosts = new List<Post>();
             List<Post> posts = new List<Post>();
 
+<<<<<<< HEAD
             posts = _context.Posts.Where(o=>o.RatingCount != 0).OrderByDescending(o=>o.RatingCount).ToList();
             
             if(ratedPosts.Count == 0){
@@ -128,36 +165,45 @@ namespace collaby_backend.Controllers
             return posts;//userPosts;//first 20 if there is no rating
         }
         
+=======
+
+>>>>>>> a909adb784a5a5c1894ad317f5abc020dad52cfd
         [HttpGet("feed")]
         public ActionResult<IEnumerable<Post>> Get()
         {
-            User user = _context.Users.First(o=>o.Id == GetUserId());
-            
+            User user = _context.Users.First(o => o.Id == GetUserId());
+
             string followingString = user.Followings;
-            if(followingString == null || followingString == ""){
+            if (followingString == null || followingString == "")
+            {
                 return NotFound();
             }
 
             //10,000 ticks per milisecond
             //long month = 25920000000000; //ticks in a month
             long week = 6048000000000; //ticks in a week
-            DateTime pastTime =  new DateTime(DateTime.UtcNow.Ticks - week*2);
-            List<Post> PostList = _context.Posts.Where(o=>o.DateCreated > pastTime && o.IsDraft != 1).OrderByDescending(o=>o.DateCreated).ToList();
+            DateTime pastTime = new DateTime(DateTime.UtcNow.Ticks - week * 2);
+            List<Post> PostList = _context.Posts.Where(o => o.DateCreated > pastTime && o.IsDraft != 1).OrderByDescending(o => o.DateCreated).ToList();
             List<Post> Feed = new List<Post>();
             String[] usernames = followingString.Split(";");
             var userIds = new List<long>();
 
-            foreach(string username in usernames){
-                userIds.Add(_context.Users.First(o=>o.UserName == username).Id);
+            foreach (string username in usernames)
+            {
+                userIds.Add(_context.Users.First(o => o.UserName == username).Id);
             }
-            foreach(Post post in PostList){
-                foreach(long id in userIds){
-                    if(post.UserId == id){
+            foreach (Post post in PostList)
+            {
+                foreach (long id in userIds)
+                {
+                    if (post.UserId == id)
+                    {
                         Feed.Add(post);
                         break;
                     }
                 }
-                if(Feed.Count<=20){
+                if (Feed.Count <= 20)
+                {
                     break;
                 }
             }
@@ -170,22 +216,31 @@ namespace collaby_backend.Controllers
                         break;
                     }
                 }
-                if(Feed.Count<=20){
+                if (Feed.Count <= 20)
+                {
                     break;
                 }
             }*/
         }
 
         [HttpPost]
-        public async Task<Object> POST([FromBody]Post post){
+        public async Task<Object> POST([FromBody]Post post)
+        {
 
             long userId = GetUserId();
 
+<<<<<<< HEAD
 
             if(post.IsDraft == 1){
+=======
+            if (post.IsDraft == 1)
+            {
+>>>>>>> a909adb784a5a5c1894ad317f5abc020dad52cfd
                 post.DateCreated = null;
-            }else{
-                User user = _context.Users.First(o=>o.Id == userId);
+            }
+            else
+            {
+                User user = _context.Users.First(o => o.Id == userId);
                 user.TotalPosts += 1;
                 _context.Entry(user).State = EntityState.Modified;
             }
@@ -194,34 +249,41 @@ namespace collaby_backend.Controllers
             _context.Posts.Add(post);
             await _context.SaveChangesAsync();
             //return Ok(new { response = "Record has been successfully added"});
-            return Ok(new { response = "Record has been successfully added"});
+            return Ok(new { response = "Record has been successfully added" });
         }
 
         [HttpPut]
-        public async Task<Object> Edit([FromBody]Post post){
+        public async Task<Object> Edit([FromBody]Post post)
+        {
 
-            Post currentPost = _context.Posts.First(o=>o.Id == post.Id);
+            Post currentPost = _context.Posts.First(o => o.Id == post.Id);
 
-            if(currentPost.UserId != GetUserId()){
+            if (currentPost.UserId != GetUserId())
+            {
                 return StatusCode(401);
-            }else{
+            }
+            else
+            {
                 post.UserId = currentPost.UserId;
             }
 
-            if(currentPost == null)
-                return Ok(new { response = "Cannot update a post that hasn't been created"});
+            if (currentPost == null)
+                return Ok(new { response = "Cannot update a post that hasn't been created" });
 
-            if(post.IsDraft == 0){
+            if (post.IsDraft == 0)
+            {
 
                 //Post currentPost = _context.Posts.First(o=>o.Id == post.Id);
                 //if the draft state changes add 1 to total posts for the user that posted it
-                if (currentPost.IsDraft == 1){
-                    User user = _context.Users.First(o=>o.Id == post.UserId);
+                if (currentPost.IsDraft == 1)
+                {
+                    User user = _context.Users.First(o => o.Id == post.UserId);
                     user.TotalPosts += 1;
                     _context.Entry(user).State = EntityState.Modified;
                     post.DateCreated = DateTime.UtcNow;
                 }
-                if(post.DateCreated != null){
+                if (post.DateCreated != null)
+                {
                     post.DateModified = DateTime.UtcNow;
                 }
             }
@@ -229,14 +291,16 @@ namespace collaby_backend.Controllers
             _context.Entry(post).State = EntityState.Modified;
             await _context.SaveChangesAsync();
 
-            return Ok(new { response = "Post has been successfully updated"});
+            return Ok(new { response = "Post has been successfully updated" });
         }
 
         [HttpPost("delete")]
-        public async Task<Object> Delete([FromBody]Post post){
+        public async Task<Object> Delete([FromBody]Post post)
+        {
 
-            if(post.IsDraft != 1){
-                User user = _context.Users.First(o=>o.Id == post.UserId);
+            if (post.IsDraft != 1)
+            {
+                User user = _context.Users.First(o => o.Id == post.UserId);
                 user.TotalPosts -= 1;
                 _context.Entry(user).State = EntityState.Modified;
             }
@@ -244,7 +308,7 @@ namespace collaby_backend.Controllers
             _context.Entry(post).State = EntityState.Deleted;
             await _context.SaveChangesAsync();
 
-            return Ok(new { response = "Post has been successfully deleted"});
+            return Ok(new { response = "Post has been successfully deleted" });
         }
     }
 }
