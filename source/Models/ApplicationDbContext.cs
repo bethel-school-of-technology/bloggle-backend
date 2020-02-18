@@ -39,8 +39,6 @@ namespace collaby_backend.Models
                     .HasColumnType("DATETIME")
                     .HasDefaultValueSql("datetime('now')");
 
-                entity.Property(e => e.IsDraft).HasDefaultValueSql("0");
-
                 entity.Property(e => e.Message)
                     .IsRequired()
                     .HasColumnType("VARCHAR(1000)");
@@ -86,7 +84,10 @@ namespace collaby_backend.Models
             {
                 entity.Property(e => e.Id);
 
-                entity.Property(e => e.Value).HasColumnType("NUMERIC(1,1)");
+                entity.Property(e => e.Value)
+                    .IsRequired()
+                    .HasColumnType("NUMERIC(1,1)")
+                    .HasDefaultValueSql("0");
 
                 entity.HasOne(d => d.Post)
                     .WithMany(p => p.Ratings)
@@ -133,8 +134,6 @@ namespace collaby_backend.Models
                     .IsRequired()
                     .HasColumnType("VARCHAR(40)");
 
-                entity.Property(e => e.Followers).HasDefaultValueSql("0");
-
                 entity.Property(e => e.Followings).HasColumnType("VARCHAR(1400)");
 
                 entity.Property(e => e.Img).HasColumnType("CHAR(10000)");
@@ -146,10 +145,6 @@ namespace collaby_backend.Models
                 entity.Property(e => e.Location)
                     .IsRequired()
                     .HasColumnType("VARCHAR(40)");
-
-                entity.Property(e => e.RatedPosts).HasDefaultValueSql("0");
-
-                entity.Property(e => e.TotalPosts).HasDefaultValueSql("0");
 
                 entity.Property(e => e.TotalRating).HasColumnType("DOUBLE");
 

@@ -26,7 +26,7 @@ namespace collaby_backend.Controllers
             _appUserContext = appUserContext;
         }
 
-        private int GetUserId(){
+        private long GetUserId(){
 
             string token = Request.Headers["Authorization"];
             int userId = Int16.Parse(Jwt.decryptJSONWebToken(token)["Id"].ToString());
@@ -59,11 +59,13 @@ namespace collaby_backend.Controllers
         {
             User user = _context.Users.First(obj=>obj.Id == GetUserId());
             List<Post> posts = new List<Post>();
-
+            
             posts = _context.Posts.Where(obj=>obj.UserId == GetUserId() && obj.RatingCount != 0).ToList();
-            return user;
+
+            user.TotalRating=0;
+
             if(posts.Count != 0){
-                double? avg = 0;
+                double avg = 0.0;
                 foreach(Post post in posts){
                     avg += post.RatingValue / post.RatingCount;
                 }
@@ -80,7 +82,7 @@ namespace collaby_backend.Controllers
             List<Post> posts = new List<Post>();
             try{
                 posts = _context.Posts.Where(obj=>obj.UserId == GetUserId() && obj.RatingCount != 0).ToList();
-                double? avg = 0;
+                double avg = 0.0;
                 foreach(Post post in posts){
                     avg += post.RatingValue / post.RatingCount;
                 }
@@ -280,12 +282,6 @@ namespace collaby_backend.Controllers
             }
 
             return Ok(new { response = "User with the username of "+user.UserName+" and Id of "+user.Id.ToString()+" has been deleted"});
-        }
-
-        [HttpPost("Test")]
-        public int Test(){
-            
-            return GetUserId();
         }
     }
 }

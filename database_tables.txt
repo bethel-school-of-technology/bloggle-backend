@@ -5,10 +5,10 @@ CREATE TABLE Users(
     LastName VARCHAR(40) NOT NULL,
     Location VARCHAR(40) NOT NULL,
     Img CHAR(10000) DEFAULT NULL, //base64 encoded - encoded using ascii characters //profile image
-	TotalRating DOUBLE DEFAULT NULL, //calculated by adding together all average values on each rated post
-	RatedPosts INTEGER DEFAULT 0, //all posts rated
-	TotalPosts INTEGER DEFAULT 0, //increase by 1 when a new post has been created (non-draft)
-	Followers INTEGER DEFAULT 0,
+	TotalRating DOUBLE DEFAULT 0 NOT NULL, //calculated by adding together all average values on each rated post
+	RatedPosts INTEGER DEFAULT 0 NOT NULL, //all posts rated
+	TotalPosts INTEGER DEFAULT 0 NOT NULL, //increase by 1 when a new post has been created (non-draft)
+	Followers INTEGER DEFAULT 0 NOT NULL,
 	Followings VARCHAR(1400) DEFAULT NULL //string of follower id's
 )
 
@@ -21,8 +21,8 @@ CREATE TABLE Posts(
     Message VARCHAR(12500) NOT NULL,
     DateCreated DATETIME DEFAULT(datetime('now')),
     DateModified DATETIME DEFAULT NULL,
-	RatingValue DOUBLE DEFAULT NULL, //all rating values added together (updated when a new rating is given)
-    RatingCount INTEGER DEFAULT NULL, //updated when a new rating is given
+	RatingValue DOUBLE DEFAULT 0 NOT NULL, //all rating values added together (updated when a new rating is given)
+    RatingCount INTEGER DEFAULT 0 NOT NULL, //updated when a new rating is given
 	IsDraft INTEGER DEFAULT 0 NOT NULL,
 	TotalComments INTEGER DEFAULT 0 NOT NULL,
 	FOREIGN KEY(UserId) REFERENCES Users(Id)
@@ -44,7 +44,7 @@ CREATE TABLE Ratings(
     Id INTEGER PRIMARY KEY AUTOINCREMENT,
 	UserId INTEGER NOT NULL,
 	PostId INTEGER NOT NULL,
-    Value NUMERIC(1,1),
+    Value DOUBLE DEFAULT NOT NULL,
 	FOREIGN KEY(UserId) REFERENCES Users(Id),
     FOREIGN KEY(PostId) REFERENCES Posts(Id)
 )

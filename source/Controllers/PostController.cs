@@ -206,9 +206,8 @@ namespace collaby_backend.Controllers
                 User user = _context.Users.First(o => o.Id == userId);
                 user.TotalPosts += 1;
                 _context.Entry(user).State = EntityState.Modified;
-                return(new { response = "Record has been successfully added" });
             }
-            post.Title += " by @" + GetUserName();
+            post.Title += " by @" + GetUserName().ToString();
             post.UserId = userId;
             _context.Posts.Add(post);
             await _context.SaveChangesAsync();

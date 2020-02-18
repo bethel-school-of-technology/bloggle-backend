@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace collaby_backend.Models
 {
@@ -18,14 +19,18 @@ namespace collaby_backend.Models
         public string Message { get; set; }
         public DateTime? DateCreated { get; set; }
         public DateTime? DateModified { get; set; }
-        public double? RatingValue { get; set; }
-        public long RatingCount { get; set; }
-        public long IsDraft { get; set; }
-        public long TotalComments { get; set; }
+        public double RatingValue { get; set; }
+        public int RatingCount { get; set; }
+        public int IsDraft { get; set; }
+        public int TotalComments { get; set; }
         
+        [JsonIgnore]
         public virtual User User { get; set; }
+        [JsonIgnore]
         public virtual ICollection<Comment> Comments { get; set; }
+        [JsonIgnore]
         public virtual ICollection<Rating> Ratings { get; set; }
+        [JsonIgnore]
         public virtual ICollection<Report> Reports { get; set; }
     }
 }
