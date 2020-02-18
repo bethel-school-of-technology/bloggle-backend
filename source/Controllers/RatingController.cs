@@ -59,11 +59,9 @@ namespace collaby_backend.Controllers
         [HttpGet("rating/{postId}")]
         public ActionResult<Rating> Get(long postId)
         {
-            Rating rating;
-            
+            Rating rating = new Rating();
             try{
-                Post post = _context.Posts.First(o=>o.Id == postId);
-                rating = _context.Ratings.First(o=>o.UserId == GetUserId());
+                rating = _context.Ratings.First(o=>o.UserId == GetUserId() && o.PostId == postId);
             }catch{
                 return null;
             }
@@ -78,30 +76,37 @@ namespace collaby_backend.Controllers
         [HttpPost]//post and put method
         public async Task<Object> POST([FromBody]Rating rating){
 
+            if(rating.Value < 1 || rating.Value > 5){
+                return Ok(new { response = "Invalid Rating"});
+            }
             Post post =_context.Posts.First(o=>o.Id == rating.PostId);
             rating.UserId = GetUserId();
+            //return Ok(new { response = "Rating has been successfully updated"});
 
-            if(_context.Ratings.First(o=>o.UserId == rating.UserId) != null){
+            try{
+                Rating previousRating = _context.Ratings.First(o=>o.UserId == rating.UserId && o.PostId == rating.PostId);
                 //if rating for the post already exisits, edit it's current value
-                post.RatingValue += rating.Value - _context.Ratings.First(o=>o.Id == rating.Id).Value;
+                post.RatingValue += rating.Value - previousRating.Value;
+                previousRating.Value = rating.Value;
                 _context.Entry(post).State = EntityState.Modified;
-                _context.Entry(rating).State = EntityState.Modified;
+                _context.Entry(previousRating).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
-
                 return Ok(new { response = "Rating has been successfully updated"});
-            }
-            if(post.RatingValue==null){
-                post.RatingCount = 1;
-                post.RatingValue = rating.Value;
-                User user = _context.Users.First(o=>o.Id == GetUserId());
-                if(user.RatedPosts != null){
-                    user.RatedPosts += 1;
+
+            }catch{
+                if(post.RatingValue==null){
+                    post.RatingCount = 1;
+                    post.RatingValue = rating.Value;
+                    User user = _context.Users.First(o=>o.Id == GetUserId());
+                    if(user.RatedPosts != null){
+                        user.RatedPosts += 1;
+                    }else{
+                        _context.Entry(user).State = EntityState.Modified;
+                    }
                 }else{
-                    _context.Entry(user).State = EntityState.Modified;
+                    post.RatingCount += 1;
+                    post.RatingValue += rating.Value;
                 }
-            }else{
-                post.RatingCount += 1;
-                post.RatingValue += rating.Value;
             }
             _context.Ratings.Add(rating);
             _context.Entry(post).State = EntityState.Modified;

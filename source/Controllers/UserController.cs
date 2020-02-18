@@ -59,17 +59,16 @@ namespace collaby_backend.Controllers
         {
             User user = _context.Users.First(obj=>obj.Id == GetUserId());
             List<Post> posts = new List<Post>();
-            try{
-                posts = _context.Posts.Where(obj=>obj.UserId == GetUserId() && obj.RatingCount != 0).ToList();
+
+            posts = _context.Posts.Where(obj=>obj.UserId == GetUserId() && obj.RatingCount != 0).ToList();
+            return user;
+            if(posts.Count != 0){
                 double? avg = 0;
                 foreach(Post post in posts){
                     avg += post.RatingValue / post.RatingCount;
                 }
                 user.TotalRating = avg;
-            }catch{
-
             }
-            
             return user;
         }
 
