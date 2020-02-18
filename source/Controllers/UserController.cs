@@ -58,6 +58,18 @@ namespace collaby_backend.Controllers
         public ActionResult<User> GetProfile()
         {
             User user = _context.Users.First(obj=>obj.Id == GetUserId());
+            List<Post> posts = new List<Post>();
+            try{
+                posts = _context.Posts.Where(obj=>obj.UserId == GetUserId() && obj.RatingCount != 0).ToList();
+                double? avg = 0;
+                foreach(Post post in posts){
+                    avg += post.RatingValue / post.RatingCount;
+                }
+                user.TotalRating = avg;
+            }catch{
+
+            }
+            
             return user;
         }
 
@@ -66,6 +78,17 @@ namespace collaby_backend.Controllers
         public ActionResult<User> GetUserProfile(String username)
         {
             User user = _context.Users.First(obj=>obj.UserName == username);
+            List<Post> posts = new List<Post>();
+            try{
+                posts = _context.Posts.Where(obj=>obj.UserId == GetUserId() && obj.RatingCount != 0).ToList();
+                double? avg = 0;
+                foreach(Post post in posts){
+                    avg += post.RatingValue / post.RatingCount;
+                }
+                user.TotalRating = avg;
+            }catch{
+
+            }
             return user;
         }
 

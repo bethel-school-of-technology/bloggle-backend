@@ -32,17 +32,21 @@ namespace collaby_backend.Controllers
 
             return userId;
         }
+        private string GetUserName(){
+
+            string token = Request.Headers["Authorization"];
+            string username = Jwt.decryptJSONWebToken(token)["sub"].ToString();
+
+            return username;
+        }
 
         [HttpGet] //get all posts
         public ActionResult<IEnumerable<Post>> Post()
         {
             List<Post> PostList = new List<Post>();
 
-            try{
-                PostList = _context.Posts.Where(o=>o.IsDraft != 1 && GetUserId() == o.UserId).ToList();
-            }catch{
-                return null;
-            }
+            PostList = _context.Posts.Where(o=>o.IsDraft != 1 && GetUserId() == o.UserId).ToList();
+
             return PostList;
         }
 
@@ -53,11 +57,8 @@ namespace collaby_backend.Controllers
             List<Post> PostList = new List<Post>();
 
             long userId = _context.Users.First(o=>o.UserName == username).Id;
-            try{
-                PostList = _context.Posts.Where(o=>o.UserId == userId && o.IsDraft != 1).OrderByDescending(o=>o.DateCreated).ToList();
-            }catch{
-                return null;
-            }
+            PostList = _context.Posts.Where(o=>o.UserId == userId && o.IsDraft != 1).OrderByDescending(o=>o.DateCreated).ToList();
+
             return PostList;
         }
 
@@ -74,11 +75,9 @@ namespace collaby_backend.Controllers
         public ActionResult<IEnumerable<Post>> GetDrafts(long postId)
         {
             List<Post> PostList = new List<Post>();
-            try{
-                PostList = _context.Posts.Where(o=>o.IsDraft == 1 && o.UserId == GetUserId()).OrderByDescending(o=>o.Id).ToList();
-            }catch{
-                return null;
-            }
+
+            PostList = _context.Posts.Where(o=>o.IsDraft == 1 && o.UserId == GetUserId()).OrderByDescending(o=>o.Id).ToList();
+
             return PostList;
         }
 
@@ -91,7 +90,43 @@ namespace collaby_backend.Controllers
             }
             return post;
         }
+        [AllowAnonymous]
+        [HttpGet("TopRated")]
+        public ActionResult<IEnumerable<Post>> TopRated(){
 
+            List<Post> ratedPosts = new List<Post>();
+            List<Post> posts = new List<Post>();
+
+            posts = _context.Posts.Where(o=>o.RatingCount != 0).OrderByDescending(o=>o.RatingCount).ToList();
+            
+            if(ratedPosts.Count == 0){
+                posts =_context.Posts.OrderByDescending(o=>o.DateCreated).Take(20).ToList();
+                return posts;//userPosts;//first 20 if there is no rating
+            }else{
+                for(double i = 4.5; i < 0; i--){
+                    foreach(Post post in ratedPosts){
+                        if(i <= post.RatingValue/post.RatingCount){
+                            posts.Append(post);
+                            if(posts.Count <= 20){
+                                break;
+                            }
+                        }
+                    }
+                    if(posts.Count <= 20){
+                        break;
+                    }
+                }
+            }
+            /*foreach(Post currentPost in posts){
+
+                List<UserPost> userPosts = new List<UserPost>();
+                UserPost uP = (UserPost)currentPost;
+                uP.UserName = _context.Users.First(o=>o.Id == currentPost.UserId).UserName;
+                userPosts.Add(uP);
+
+            }*/
+            return posts;//userPosts;//first 20 if there is no rating
+        }
         
         [HttpGet("feed")]
         public ActionResult<IEnumerable<Post>> Get()
@@ -146,6 +181,7 @@ namespace collaby_backend.Controllers
 
             long userId = GetUserId();
 
+
             if(post.IsDraft == 1){
                 post.DateCreated = null;
             }else{
@@ -153,6 +189,7 @@ namespace collaby_backend.Controllers
                 user.TotalPosts += 1;
                 _context.Entry(user).State = EntityState.Modified;
             }
+            post.Title += "by @" + GetUserName();
             post.UserId = userId;
             _context.Posts.Add(post);
             await _context.SaveChangesAsync();
@@ -188,6 +225,7 @@ namespace collaby_backend.Controllers
                     post.DateModified = DateTime.UtcNow;
                 }
             }
+            post.Title += "by @" + GetUserName();
             _context.Entry(post).State = EntityState.Modified;
             await _context.SaveChangesAsync();
 

@@ -90,9 +90,19 @@ namespace collaby_backend.Controllers
 
                 return Ok(new { response = "Rating has been successfully updated"});
             }
-
-            post.RatingCount += 1;
-            post.RatingValue += rating.Value;
+            if(post.RatingValue==null){
+                post.RatingCount = 1;
+                post.RatingValue = rating.Value;
+                User user = _context.Users.First(o=>o.Id == GetUserId());
+                if(user.RatedPosts != null){
+                    user.RatedPosts += 1;
+                }else{
+                    _context.Entry(user).State = EntityState.Modified;
+                }
+            }else{
+                post.RatingCount += 1;
+                post.RatingValue += rating.Value;
+            }
             _context.Ratings.Add(rating);
             _context.Entry(post).State = EntityState.Modified;
             await _context.SaveChangesAsync();

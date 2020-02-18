@@ -29,6 +29,13 @@ namespace collaby_backend.Controllers
 
             return userId;
         }
+        private string GetUserName(){
+
+            string token = Request.Headers["Authorization"];
+            string username = Jwt.decryptJSONWebToken(token)["sub"].ToString();
+
+            return username;
+        }
 
         // GET api/comments/{id}
         [HttpGet("{postId}")]
@@ -65,7 +72,7 @@ namespace collaby_backend.Controllers
                 post.TotalComments += 1;
                 _context.Entry(post).State = EntityState.Modified;
             }
-
+            comment.Message = GetUserName()+ ";" +comment.Message;
             _context.Comments.Add(comment);
             await _context.SaveChangesAsync();
             return Ok(new { response = "Comment has been successfully added"});
@@ -94,7 +101,7 @@ namespace collaby_backend.Controllers
                     comment.DateCreated = DateTime.UtcNow;
                 }
             }
-
+            comment.Message = GetUserName()+ ";" + comment.Message;
             _context.Entry(comment).State = EntityState.Modified;
             await _context.SaveChangesAsync();
 
