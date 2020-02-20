@@ -47,7 +47,7 @@ namespace collaby_backend.Controllers
         public ActionResult<IEnumerable<Report>> GetAll()
         {
             if(!isAdmin()){
-                StatusCode(401);
+                return StatusCode(401);
             }
             List<Report> ReportList = _context.Reports.OrderByDescending(o=>o.DateCreated).ToList();
             return ReportList;
@@ -58,7 +58,7 @@ namespace collaby_backend.Controllers
         public ActionResult<Report> Get(long reportId)
         {
             if(!isAdmin()){
-                StatusCode(401);
+                return StatusCode(401);
             }
             Report report = _context.Reports.First(o=>o.Id == reportId);
             return report;
@@ -69,7 +69,7 @@ namespace collaby_backend.Controllers
         public ActionResult<IEnumerable<Report>> GetPostReports(long postId)
         {
             if(isAdmin() == false){
-                StatusCode(401);
+               return StatusCode(401);
             }
             List<Report> ReportList = _context.Reports.Where(o=>o.PostId == postId).OrderByDescending(o=>o.DateCreated).ToList();
             return ReportList;
@@ -92,7 +92,7 @@ namespace collaby_backend.Controllers
         public async Task<Object> Delete([FromRoute]long id){
 
             if(!isAdmin()){
-                StatusCode(401);
+                return StatusCode(401);
             }
             Report report = new Report();
 
@@ -108,15 +108,16 @@ namespace collaby_backend.Controllers
         
 
         [HttpPut("band/{username}")]
-        public async Task BandUser(String username){
+        public async Task<Object> BandUser(String username){
 
             if(!isAdmin()){
-                StatusCode(401);
+                return StatusCode(401);
             }
             AppUser user = _appContext.AppUsers.First(o=>o.UserName == username);
             user.IsBand = 1;
             _context.Entry(user).State = EntityState.Modified;
             await _context.SaveChangesAsync();
+            return Ok(new { response = user.UserName+" has been band"});
         }
 
     }

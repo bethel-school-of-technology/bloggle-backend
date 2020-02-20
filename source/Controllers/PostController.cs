@@ -262,12 +262,17 @@ namespace collaby_backend.Controllers
             Post post = _context.Posts.First(o=>o.Id == postId);
 
             if(GetUserId() != post.UserId){
-                StatusCode(401);
+                return StatusCode(401);
             }
+
             if (post.IsDraft != 1)
             {
                 User user = _context.Users.First(o => o.Id == GetUserId());
                 user.TotalPosts -= 1;
+
+                if(post.RatingCount != 0){
+                    user.RatedPosts -= 1;
+                }
                 _context.Entry(user).State = EntityState.Modified;
             }
             _context.Posts.Remove(post);
