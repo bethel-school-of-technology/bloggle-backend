@@ -46,13 +46,13 @@ namespace collaby_backend.Controllers
 
 
         // GET api/users
-        [HttpGet]
+        /*[HttpGet] //used for testing
         [AllowAnonymous]
         public ActionResult<IEnumerable<User>> Get()
         {
             List<User> UserList = _context.Users.ToList();
             return UserList;
-        }
+        }*/
 
         [HttpGet("profile")] //profile page
         public ActionResult<User> GetProfile()
@@ -264,9 +264,12 @@ namespace collaby_backend.Controllers
             return Ok(new { response = "Unable to unfollow "+username+" because you're not currently following them"});
         }
 
-        //meant for testing
         [HttpDelete("{id}")]
         public async Task<Object> Delete(long id){
+
+            if(!isAdmin()){
+                return StatusCode(401);
+            }
 
             var user = await _context.Users.FindAsync(id);
             var appUser = await _appUserContext.AppUsers.FindAsync(id);
@@ -275,11 +278,10 @@ namespace collaby_backend.Controllers
             {
                 return NotFound();
             }
-            if(isAdmin() == true){
-                _appUserContext.AppUsers.Remove(appUser);
-                _context.Users.Remove(user);
-                await _context.SaveChangesAsync();
-            }
+            
+            _appUserContext.AppUsers.Remove(appUser);
+            _context.Users.Remove(user);
+            await _context.SaveChangesAsync();
 
             return Ok(new { response = "User with the username of "+user.UserName+" and Id of "+user.Id.ToString()+" has been deleted"});
         }

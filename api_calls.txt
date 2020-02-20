@@ -4,16 +4,16 @@ Needed headers:
 
 Users Controller methods: api/users
 
-GET: //get a list of all users
+GET: profile //get profile page of current logged in user
 GET: profile/{username}
 GET: usernameSearch/{username} //find a user matching that username
-GET: nameSearch/{name}
-GET: followList //get all users being followed
+GET: nameSearch/{name} //will search by either the first names, last names, or both names if they are seperated by a '_' symbol
+GET: followList //get all users being followed by logged in user
 POST: //Create a user
 PUT: //Edit a users info
 PUT: follow/{username} //add a user to following string
 PUT: unfollow/{username} //unfollow a user you currently follow
-POST: delete/{id} //delete a user by their id (need to be an admin)
+DELETE: {id} //delete a user by their id (need to be an admin)
 
 Login Controller methods:
 POST: api/Login //returns an access token.
@@ -23,22 +23,23 @@ Posts Controller methods: api/posts
 GET: //get all posts in descending order by date created
 GET: user/{username} //get all posts from specific user
 GET: post/{postId} //get specific post
-GET: feed //get all recent posts from those you follow
-GET: drafts //get all drafts
-GET: draft/{draftId} //grab post matching the post id given
+GET: feed //get a total of 20 recent posts from those you follow
+GET: drafts //get all drafts from logged in user
+GET: draft/{draftId} //grab post matching the post id given if it's userId matches the logged in users
+GET: TopRated //get a sorted list of the 20 most recent rated posts with the top rated appearing first
 POST: {Message:string, IsDraft:int (not required)} //submit a post by the currently logged in user. Can give a value to IsDraft
 PUT: {Post}//edits a prexisting post by logged in user
-POST: delete/{Post}//deletes a prexisting post from logged in user
+DELETE: {postId}//deletes a prexisting post from logged in user
 
 Comment Controller Methods: api/comments
 GET: post/{postId} //get all comments for post
 GET comment/{comment id} //get a specific comment
 POST: {Message:string, UserId:int, PostId:int, IsDraft:int (not required)}
-PUT: {Comment}
-DELETE: {Comment}
+PUT: //update comment
+DELETE: {id}
 
 Rating Controller Methods: api/ratings
-GET: all/{postId} //get all posts for specificed post
+GET: post/{postId} //get all posts for specificed post
 GET: rating/{postId} //get the logged in users rating for specificed post
 POST: //includes post and put functionallity for ratings (adds or modifies depending on whether a rating exists)
 
@@ -47,4 +48,5 @@ GET: //grab all submitted reports. They are in descending order(admin only)
 GET: report/{reportId} //grab a specific report(admin only)
 GET: post/{postId} //grab all reports about a post (admin only)
 POST: {PostId:int}//allows a user to post a report
-DELETE: {Report obj}(admin only)
+PUT: band/{username} //allows an admin to band a user
+DELETE: //deletes account(admin only)

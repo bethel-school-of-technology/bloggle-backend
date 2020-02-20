@@ -40,7 +40,7 @@ namespace collaby_backend.Controllers
         }
 
         // GET api/comments/{id}
-        [HttpGet("{postId}")]
+        [HttpGet("post/{postId}")]
         [AllowAnonymous]
         public ActionResult<IEnumerable<Comment>> GetAll(long postId)
         {
@@ -52,7 +52,7 @@ namespace collaby_backend.Controllers
             return CommentList;
         }
         // GET api/comments/single/{id}
-        [HttpGet("single/{commentId}")]
+        [HttpGet("comment/{commentId}")]
         [AllowAnonymous]
         public ActionResult<Comment> GetSingle(long commentId)
         {
@@ -65,16 +65,8 @@ namespace collaby_backend.Controllers
         public async Task<Object> POST(Comment comment)
         {
 
-<<<<<<< HEAD
             Post post = _context.Posts.First(o=>o.Id == comment.PostId);
 
-=======
-            Post post = _context.Posts.First(o => o.Id == comment.PostId);
-            // if (post.UserId != GetUserId())
-            // {
-            //     return StatusCode(401);
-            // }
->>>>>>> 258b25e69e33a8557c41693575cb2dd985f30c95
             comment.UserId = post.UserId;
 
             if (comment.IsDraft == 1)
@@ -125,9 +117,13 @@ namespace collaby_backend.Controllers
 
             return Ok(new { response = "Comment has been successfully updated" });
         }
-        [HttpDelete]
-        public async Task<Object> Delete(Comment comment)
+        [HttpDelete("{id}")]
+        public async Task<Object> Delete([FromRoute]long id)
         {
+            Comment comment = _context.Comments.First(o=>o.Id == id);
+            if(comment.Id != GetUserId()){
+                return StatusCode(401);
+            }
 
             if (comment.IsDraft != 1)
             {
@@ -135,7 +131,7 @@ namespace collaby_backend.Controllers
                 post.TotalComments -= 1;
                 _context.Entry(post).State = EntityState.Modified;
             }
-            _context.Entry(comment).State = EntityState.Deleted;
+            _context.Comments.Remove(comment);
             await _context.SaveChangesAsync();
 
             return Ok(new { response = "Your comment has been deleted" });

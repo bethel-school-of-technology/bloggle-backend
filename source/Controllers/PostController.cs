@@ -95,11 +95,10 @@ namespace collaby_backend.Controllers
         [HttpGet("TopRated")]
         public ActionResult<IEnumerable<Post>> TopRated()
         {
-
             List<Post> ratedPosts = new List<Post>();
             List<Post> posts = new List<Post>();
 
-            posts = _context.Posts.Where(o => o.RatingCount != 0).OrderByDescending(o => o.RatingCount).ToList();
+            ratedPosts = _context.Posts.Where(o => o.RatingCount != 0).OrderByDescending(o => o.RatingCount).ToList();
 
             if (ratedPosts.Count == 0)
             {

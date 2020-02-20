@@ -46,7 +46,7 @@ namespace collaby_backend.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<Report>> GetAll()
         {
-            if(isAdmin() == false){
+            if(!isAdmin()){
                 StatusCode(401);
             }
             List<Report> ReportList = _context.Reports.OrderByDescending(o=>o.DateCreated).ToList();
@@ -57,7 +57,7 @@ namespace collaby_backend.Controllers
         [HttpGet("report/{reportId}")]
         public ActionResult<Report> Get(long reportId)
         {
-            if(isAdmin() == false){
+            if(!isAdmin()){
                 StatusCode(401);
             }
             Report report = _context.Reports.First(o=>o.Id == reportId);
@@ -79,6 +79,7 @@ namespace collaby_backend.Controllers
         public async Task<Object> POST([FromBody]Report report){
 
             report.UserId = GetUserId();
+
             if(_context.Users.First(o=>o.Id == report.UserId) == null){
                 return Ok(new { response = "You have already reported this post"});
             }
@@ -87,22 +88,29 @@ namespace collaby_backend.Controllers
             return Ok(new { response = "Report has been successfully added"});
         }
 
-        [HttpDelete]
-        public async Task<Object> Delete([FromBody]Report report){
+        [HttpDelete("{id}")]
+        public async Task<Object> Delete([FromRoute]long id){
 
-            if(isAdmin() == false){
+            if(!isAdmin()){
                 StatusCode(401);
             }
-            _context.Entry(report).State = EntityState.Deleted;
+            Report report = new Report();
+
+            try{
+                report = _context.Reports.First(o=>o.Id == id);
+            }catch{
+                return Ok(new { response = "Invalid report id"});
+            }
+            _context.Reports.Remove(report).State = EntityState.Deleted;
             await _context.SaveChangesAsync();
-            return Ok(new { response = "Your report has been deleted"});
+            return Ok(new { response = "Report has been deleted"});
         }
         
 
         [HttpPut("band/{username}")]
         public async Task BandUser(String username){
 
-            if(isAdmin() == false){
+            if(!isAdmin()){
                 StatusCode(401);
             }
             AppUser user = _appContext.AppUsers.First(o=>o.UserName == username);

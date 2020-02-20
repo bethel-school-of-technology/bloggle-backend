@@ -42,7 +42,7 @@ namespace collaby_backend.Controllers
 
         // GET api/ratings/all/{postId}
         [AllowAnonymous]
-        [HttpGet("all/{postId}")]
+        [HttpGet("post/{postId}")]
         public ActionResult <IEnumerable<Rating>> GetAll(long postId)
         {
             List<Rating> ratings = new List<Rating>();
@@ -57,17 +57,14 @@ namespace collaby_backend.Controllers
         }
 
         [HttpGet("rating/{postId}")]
-        public ActionResult<Rating> Get(long postId)
+        public ActionResult<Rating> Get([FromRoute]long postId)
         {
             Rating rating = new Rating();
+
             try{
                 rating = _context.Ratings.First(o=>o.UserId == GetUserId() && o.PostId == postId);
             }catch{
-                return null;
-            }
-            
-            if(rating == null){
-                return null;
+                //rating.Value=0;
             }
 
             return rating;
