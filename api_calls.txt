@@ -49,4 +49,4 @@ GET: report/{reportId} //grab a specific report(admin only)
 GET: post/{postId} //grab all reports about a post (admin only)
 POST: {PostId:int}//allows a user to post a report
 PUT: band/{username} //allows an admin to band a user
-DELETE: //deletes account(admin only)
+DELETE: //deletes report(admin only)
