@@ -49,4 +49,8 @@ GET: report/{reportId} //grab a specific report(admin only)
 GET: post/{postId} //grab all reports about a post (admin only)
 POST: {PostId:int}//allows a user to post a report
 PUT: band/{username} //allows an admin to band a user
+<<<<<<< HEAD
 DELETE: //deletes report(admin only)
+=======
+DELETE: //deletes report(admin only)
+>>>>>>> 1d3dd19ba0b257cd61dad63000dcd9e01ea32f26
