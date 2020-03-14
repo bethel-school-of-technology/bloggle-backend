@@ -39,7 +39,7 @@ namespace collaby_backend.Controllers
             return username;
         }
 
-        // GET api/comments/{id}
+        // GET api/comments/post/{postId}
         [HttpGet("post/{postId}")]
         [AllowAnonymous]
         public ActionResult<IEnumerable<Comment>> GetAll(long postId)
@@ -51,7 +51,7 @@ namespace collaby_backend.Controllers
             }
             return CommentList;
         }
-        // GET api/comments/single/{id}
+        // GET api/comments/comment/{commentId}
         [HttpGet("comment/{commentId}")]
         [AllowAnonymous]
         public ActionResult<Comment> GetSingle(long commentId)

@@ -97,33 +97,40 @@ namespace collaby_backend.Controllers
         {
             List<Post> ratedPosts = new List<Post>();
             List<Post> posts = new List<Post>();
+            List<Post> unrated = new List<Post>();
 
             ratedPosts = _context.Posts.Where(o => o.RatingCount != 0).OrderByDescending(o => o.RatingCount).ToList();
 
             if (ratedPosts.Count == 0)
             {
-                posts = _context.Posts.OrderByDescending(o => o.DateCreated).Take(20).ToList();
+                posts = _context.Posts.Where(o=>o.IsDraft != 1).OrderByDescending(o => o.DateCreated).Take(20).ToList();
                 return posts;//userPosts;//first 20 if there is no rating
             }
             else
             {
-                for (double i = 4.5; i < 0; i--)
+                for (double i = 4.5; i > 0; i--)
                 {
                     foreach (Post post in ratedPosts)
                     {
-                        if (i <= post.RatingValue / post.RatingCount)
+                        if (i <= post.RatingValue / Convert.ToDouble(post.RatingCount))
                         {
-                            posts.Append(post);
-                            if (posts.Count <= 20)
+                            posts.Add(post);
+                            ratedPosts = ratedPosts.Where(f => post.Id != f.Id).ToList();
+                            if (posts.Count >= 20)
                             {
                                 break;
                             }
                         }
                     }
-                    if (posts.Count <= 20)
+                    if (posts.Count >= 20)
                     {
                         break;
                     }
+                }
+                if(posts.Count < 20){
+                    
+                    posts.AddRange(_context.Posts.Where(o=>o.IsDraft == 0 && o.RatingValue == 0).OrderByDescending(o => o.DateCreated).Take(20-posts.Count).ToList());
+                    return posts;
                 }
             }
             /*foreach(Post currentPost in posts){
@@ -134,11 +141,11 @@ namespace collaby_backend.Controllers
                 userPosts.Add(uP);
 
             }*/
-            return posts;//userPosts;//first 20 if there is no rating
+            return ratedPosts;//userPosts;//first 20 if there is no rating
         }
 
         [HttpGet("feed")]
-        public ActionResult<IEnumerable<Post>> Get()
+        public ActionResult<Object> Get()
         {
             User user = _context.Users.First(o => o.Id == GetUserId());
 
@@ -206,7 +213,7 @@ namespace collaby_backend.Controllers
                 user.TotalPosts += 1;
                 _context.Entry(user).State = EntityState.Modified;
             }
-            post.Title += " by @" + GetUserName().ToString();
+            post.Title += " by @" + GetUserName();
             post.UserId = userId;
             _context.Posts.Add(post);
             await _context.SaveChangesAsync();
